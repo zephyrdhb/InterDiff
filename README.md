@@ -5,7 +5,7 @@
 
 
 ## Python Environment Install
-Please user _Mamba_.
+Please use _Mamba_ to manage the environment.
 ```bash
 conda create -n interdiff python=3.8 -y
 conda activate interdiff
