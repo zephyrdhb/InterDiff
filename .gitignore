@@ -1,0 +1,8 @@
+# IDE
+.idea/
+
+# OS FILE
+.DS_Store
+
+data
+logs_diffusion
