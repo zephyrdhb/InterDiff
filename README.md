@@ -35,17 +35,16 @@ If you want to process the dataset from scratch, you need to download CrossDocke
 1. run the script [extract_pockets.py](scripts_%2Fdata_preparation%2Fextract_pockets.py) to extract the pocket:
     ```bash
     python -m scripts_orig.data_preparation.clean_crossdocked \ 
-   --source_data_path  data/crossdocked_v1.1_rmsd1.0 \
-   --save_pocket_path data/crossdocked_v1.1_rmsd1.0_pocket \
-   --save_db_path data/pocket.lmdb \
+   --source_data_path ../interdiff_data/crossdocked_v1.1_rmsd1.0 \
+   --save_pocket_path ../interdiff_data/crossdocked_v1.1_rmsd1.0_pocket \
+   --save_db_path ../interdiff_data/pocket.lmdb \
    --num_workers 128
     ```
 2. run the script [extract_prompt.py](scripts_%2Fdata_preparation%2Fextract_prompt.py) for detecting interaction types and adding prompts to the dataset:
     ```bash
     python -m scripts_orig.data_preparation.extract_prompt \
-   --source_data_path data/crossdocked_v1.1_rmsd1.0 \
-   --source_db_path data/crossdocked_v1.1_rmsd1.0_pocket \
-   --save_db_path ../interdiff_data/pocket.lmdb \
+   --source_data_path ../interdiff_data/crossdocked_v1.1_rmsd1.0 \
+   --source_db_path ../interdiff_data/pocket.lmdb \
    --temp_path ../interdiff_data/temp \
    --save_db_path ../interdiff_data/pocket_with_prompt.lmdb \
    --num_workers 128
