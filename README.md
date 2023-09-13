@@ -32,7 +32,7 @@ We provide the preprocessed data on [data](https://drive.google.com/drive/folder
 * `prompt_split.lmdb`
 
 If you want to process the dataset from scratch, you need to download CrossDocked2020 v1.1 [data](https://drive.google.com/file/d/1T9jyEv7wq0nzn_G4JHyTQeevG5ULX8a6/view?usp=drive_link) processed by Guan et.al, the original dataset is filtered to keep the data with RMSD < 1A.
-1. run the script [extract_pockets.py](scripts_%2Fdata_preparation%2Fextract_pockets.py) to extract the pocket:
+1. run the script [extract_pockets.py](scripts%2Fdata_preparation%2Fextract_pockets.py) to extract the pocket:
     ```bash
     python -m scripts_orig.data_preparation.clean_crossdocked \ 
    --source_data_path ../interdiff_data/crossdocked_v1.1_rmsd1.0 \
@@ -40,7 +40,7 @@ If you want to process the dataset from scratch, you need to download CrossDocke
    --save_db_path ../interdiff_data/pocket.lmdb \
    --num_workers 128
     ```
-2. run the script [extract_prompt.py](scripts_%2Fdata_preparation%2Fextract_prompt.py) for detecting interaction types and adding prompts to the dataset:
+2. run the script [extract_prompt.py](scripts%2Fdata_preparation%2Fextract_prompt.py) for detecting interaction types and adding prompts to the dataset:
     ```bash
     python -m scripts_orig.data_preparation.extract_prompt \
    --source_data_path ../interdiff_data/crossdocked_v1.1_rmsd1.0 \
