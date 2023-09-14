@@ -304,7 +304,7 @@ if __name__ == "__main__":
         'interactions': inter_dis[6],
         'smiles': inter_dis[7],
         'ligand_file': inter_dis[8]})
-    dataframe.to_csv("statistics11.csv", index=False, sep=',')
+    dataframe.to_csv("data/statistics11.csv", index=False, sep=',')
 
     # split train/test data
     with db2.begin() as txn:
