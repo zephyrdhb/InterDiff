@@ -204,95 +204,97 @@ if __name__ == "__main__":
         keys = list(txn.cursor().iternext(values=False))
     print(len(keys))
 
+    txn2 = db2.begin(write=True, buffers=True)
+
     inter_dis = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: []}
     inter = {0: 'caption', 1: 'halogen', 2: 'hydrogen', 3: 'pi'}
 
     pool = Pool(processes=args.num_workers)
     results = pool.imap_unordered(partial(get_prompt, args=args), keys)
-    for prompt in tqdm(results, total=len(keys)):
+    no_inters = 0
+    for key_prompt in tqdm(results, total=len(keys)):
+        if key_prompt is None:
+            continue
+        key, prompt = key_prompt
+        data = pickle.loads(db.begin().get(key))
+
         if prompt is None:
             continue
-        key, prompt = prompt
-        with db2.begin(write=True, buffers=True) as txn:
-            no_inters = 0
-            data = pickle.loads(db.begin().get(key))
-            if prompt is None:
-                continue
-            else:
-                num_inters = 0
-                for _, v in prompt.items():
-                    num_inters += len(v)
-                if num_inters == 0:
-                    no_inters += 1
-                    continue
-                data['prompt'] = prompt
 
-                # remove the interaction involves more than one residue
-                temp_prompt = {}
-                for prompt_id, value in prompt.items():
-                    temp_prompt[prompt_id] = set()
-                    for sub_prompt in value:
-                        protein_atoms = sub_prompt[1]
-                        res_ids = set(data['protein_res_id'][protein_atoms])
-                        if len(res_ids) == 1:
-                            temp_prompt[prompt_id] = temp_prompt[prompt_id].union(res_ids)
-                        else:
-                            print('detect one interaction involves more than one residues')
+        num_inters = 0
+        for _, v in prompt.items():
+            num_inters += len(v)
+        if num_inters == 0:
+            no_inters += 1
+            continue
+        data['prompt'] = prompt
 
-                # remove the residue involves more than one interaction
-                temp, del_res_ids = set(), set()
-                for prompt_id, res_ids in temp_prompt.items():
-                    # detect if any residues with more than one interaction
-                    repeat_res_id = temp.intersection(res_ids)
-                    del_res_ids.union(repeat_res_id)
-                    temp.union(res_ids)
+        # remove the interaction involves more than one residue
+        temp_prompt = {}
+        for prompt_id, value in prompt.items():
+            temp_prompt[prompt_id] = set()
+            for sub_prompt in value:
+                protein_atoms = sub_prompt[1]
+                res_ids = set(data['protein_res_id'][protein_atoms])
+                if len(res_ids) == 1:
+                    temp_prompt[prompt_id] = temp_prompt[prompt_id].union(res_ids)
+                else:
+                    print('detect one interaction involves more than one residues')
 
-                for prompt_id, value in temp_prompt.items():
-                    value -= del_res_ids
+            # remove the residue involves more than one interaction
+        temp, del_res_ids = set(), set()
+        for prompt_id, res_ids in temp_prompt.items():
+            # detect if any residues with more than one interaction
+            repeat_res_id = temp.intersection(res_ids)
+            del_res_ids.union(repeat_res_id)
+            temp.union(res_ids)
 
-                # add the interaction prompt to every protein atom
-                interactions = np.zeros(len(data['protein_element']), dtype=np.int64)
-                for prompt_id, res_ids in temp_prompt.items():
-                    atom_indexes = np.isin(data['protein_res_id'], list(res_ids))
-                    aminos = data['protein_atom_to_aa_type']
+        for prompt_id, value in temp_prompt.items():
+            value -= del_res_ids
 
-                    all_interaction_prompt = np.array([
-                        interaction_prompt.get(AA_NUMBER[amino] + '_' + INTERACTION[prompt_id], 44) for amino in aminos
-                    ])[atom_indexes]
-                    interactions[atom_indexes] = all_interaction_prompt
+        # add the interaction prompt to every protein atom
+        interactions = np.zeros(len(data['protein_element']), dtype=np.int64)
+        for prompt_id, res_ids in temp_prompt.items():
+            atom_indexes = np.isin(data['protein_res_id'], list(res_ids))
+            aminos = data['protein_atom_to_aa_type']
 
-                data['interaction'] = interactions
+            all_interaction_prompt = np.array([
+                interaction_prompt.get(AA_NUMBER[amino] + '_' + INTERACTION[prompt_id], 44) for amino in aminos
+            ])[atom_indexes]
+            interactions[atom_indexes] = all_interaction_prompt
 
-                torchify_data = torchify_dict(data)
-                txn.put(key=key, value=pickle.dumps(torchify_data))
+        data['interaction'] = interactions
 
-                # add to csv
-                inter_dis[0].append(len(prompt[0]))  # 记录该相互作用数目
-                inter_dis[1].append(len(prompt[1]))  # 记录该相互作用数目
-                inter_dis[2].append(len(prompt[2]))  # 记录该相互作用数目
-                inter_dis[3].append(len(prompt[3]))  # 记录该相互作用数目
-                inter_dis[4].append(len(data['ligand_element']))  # 记录复合物配体原子数
-                inter_dis[5].append(len(data['protein_element']))  # 记录复合物蛋白口袋原子数
-                interactions = []
-                for idx, interaction in prompt.items():
-                    for j in interaction:
-                        if j != []:
-                            temp = {
-                                INTERACTION[idx]: (
-                                    (
-                                        j,
-                                        get_lig_atom(j[0], data['ligand_element']),
-                                        get_pro_atom(j[1], data['protein_atom_name']),
-                                        get_res(j[1], data['protein_atom_to_aa_type']),
-                                        data['protein_res_id'][j[1]].tolist()
-                                    )
-                                )
-                            }
-                            interactions.append(temp)
+        torchify_data = torchify_dict(data)
+        txn2.put(key=key, value=pickle.dumps(torchify_data))
 
-                inter_dis[6].append(interactions)
-                inter_dis[7].append(data['ligand_smiles'])
-                inter_dis[8].append(data['ligand_filename'])
+        # add to csv
+        inter_dis[0].append(len(prompt[0]))  # 记录该相互作用数目
+        inter_dis[1].append(len(prompt[1]))  # 记录该相互作用数目
+        inter_dis[2].append(len(prompt[2]))  # 记录该相互作用数目
+        inter_dis[3].append(len(prompt[3]))  # 记录该相互作用数目
+        inter_dis[4].append(len(data['ligand_element']))  # 记录复合物配体原子数
+        inter_dis[5].append(len(data['protein_element']))  # 记录复合物蛋白口袋原子数
+        interactions = []
+        for idx, interaction in prompt.items():
+            for j in interaction:
+                if j != []:
+                    temp = {
+                        INTERACTION[idx]: (
+                            (
+                                j,
+                                get_lig_atom(j[0], data['ligand_element']),
+                                get_pro_atom(j[1], data['protein_atom_name']),
+                                get_res(j[1], data['protein_atom_to_aa_type']),
+                                data['protein_res_id'][j[1]].tolist()
+                            )
+                        )
+                    }
+                    interactions.append(temp)
+
+        inter_dis[6].append(interactions)
+        inter_dis[7].append(data['ligand_smiles'])
+        inter_dis[8].append(data['ligand_filename'])
     print(no_inters)
     dataframe = pd.DataFrame({
         'cation_pi_inf': inter_dis[0],
@@ -305,12 +307,12 @@ if __name__ == "__main__":
         'smiles': inter_dis[7],
         'ligand_file': inter_dis[8]})
     dataframe.to_csv("data/statistics11.csv", index=False, sep=',')
-
+    txn2.commit()
     # split train/test data
     with db2.begin() as txn:
         keys = list(txn.cursor().iternext(values=False))
 
-    train = random.sample(range(len(keys)), int(0.995 * len(keys)))
+    train = random.sample(range(len(keys)), int(0.998 * len(keys)))
     test = list(set(range(len(keys))).difference(set(train)))
     print('train nums: {} , test nums {}'.format(len(train), len(test)))
     torch.save({'train': train, 'test': test}, '../interdiff_data/prompt_split.pt')

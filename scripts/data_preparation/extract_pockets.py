@@ -72,6 +72,7 @@ if __name__ == '__main__':
         readahead=False,
         meminit=False,
     )
+    txn = db.begin(write=True, buffers=True)
 
     pool = mp.Pool(args.num_workers)
     index_pocket = []
@@ -84,24 +85,23 @@ if __name__ == '__main__':
             ligand_dict, selected_residues = protein_ligand_dicts
             pocket_dict = PDBProtein.residues_to_dict_atom_(selected_residues)
 
-            with db.begin(write=True, buffers=True) as txn:
-                data = {}
-                data['protein_filename'] = item_pocket[0]
-                data['ligand_filename'] = item_pocket[1]
+            data = {}
+            data['protein_filename'] = item_pocket[0]
+            data['ligand_filename'] = item_pocket[1]
 
-                if pocket_dict is not None:
-                    for key, value in pocket_dict.items():
-                        data['protein_' + key] = value
+            if pocket_dict is not None:
+                for key, value in pocket_dict.items():
+                    data['protein_' + key] = value
 
-                if ligand_dict is not None:
-                    for key, value in ligand_dict.items():
-                        data['ligand_' + key] = value
+            if ligand_dict is not None:
+                for key, value in ligand_dict.items():
+                    data['ligand_' + key] = value
 
-                txn.put(
-                    key=str(i).encode(),
-                    value=pickle.dumps(data)
-                )
-
+            txn.put(
+                key=str(i).encode(),
+                value=pickle.dumps(data)
+            )
+    txn.commit()
     db.close()
 
     # index_pocket = pool.map(partial(process_item, args=args), index)

@@ -22,7 +22,7 @@ pip install _env/$SYSTEM_TYPE/torch_spline_conv-1.2.2+pt113cu116-cp38-cp38-linux
 pip install torch_geometric -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 
 micromamba install rdkit openbabel tensorboard pyyaml easydict python-lmdb -c conda-forge
-pip install meeko==0.1.dev3 scipy pdb2pqr vina==1.2.2
+pip install meeko==0.1.dev3 scipy pdb2pqr vina==1.2.2 transformers
 python -m pip install git+https://github.com/Valdes-Tresanco-MS/AutoDockTools_py3
 ```
 
