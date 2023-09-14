@@ -22,7 +22,7 @@ pip install _env/SYSTEM_TYPEtorch_geometric -i https://pypi.tuna.tsinghua.edu.cn
 
 micromamba install rdkit openbabel tensorboard pyyaml easydict python-lmdb -c conda-forge
 pip install meeko==0.1.dev3 scipy pdb2pqr vina==1.2.2
-micromamba -m pip install git+https://github.com/Valdes-Tresanco-MS/AutoDockTools_py3
+python -m pip install git+https://github.com/Valdes-Tresanco-MS/AutoDockTools_py3
 ```
 
 ## Data Preprocess
