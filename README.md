@@ -5,7 +5,7 @@
 
 
 ## Python Environment Install
-Please use _Mamba_ to manage the environment.
+Please use [_Mamba_](https://mamba.readthedocs.io/en/latest/micromamba-installation.html) to manage the environment.
 ```bash
 conda create -n interdiff python=3.8 -y
 conda activate interdiff

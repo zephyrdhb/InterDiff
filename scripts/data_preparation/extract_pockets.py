@@ -1,6 +1,7 @@
 import os
 import argparse
 import multiprocessing as mp
+from multiprocessing import set_start_method
 import pickle
 import shutil
 from functools import partial
@@ -49,6 +50,7 @@ def process_item(item, args):
 
 
 if __name__ == '__main__':
+    set_start_method('fork')
     parser = argparse.ArgumentParser()
     parser.add_argument('--source_data_path', type=str, default='./data/crossdocked_v1.1_rmsd1.0')
     parser.add_argument('--save_pocket_path', type=str, default='../interdiff_data/crossdocked_v1.1_rmsd1.0_pocket')
