@@ -19,7 +19,7 @@ pip install _env/$SYSTEM_TYPE/torch_scatter-2.1.1+pt113cu116-cp38-cp38-linux_x86
 pip install _env/$SYSTEM_TYPE/torch_cluster-1.6.1+pt113cu116-cp38-cp38-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 pip install _env/$SYSTEM_TYPE/torch_sparse-0.6.17+pt113cu116-cp38-cp38-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 pip install _env/$SYSTEM_TYPE/torch_spline_conv-1.2.2+pt113cu116-cp38-cp38-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
-pip install _env/$SYSTEM_TYPE/torch_geometric -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
+pip install torch_geometric -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 
 micromamba install rdkit openbabel tensorboard pyyaml easydict python-lmdb -c conda-forge
 pip install meeko==0.1.dev3 scipy pdb2pqr vina==1.2.2
