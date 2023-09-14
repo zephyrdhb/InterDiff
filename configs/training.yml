@@ -1,7 +1,7 @@
 data:
   name: pl
   path: ../interdiff_data/pocket_with_prompt.lmdb
-  split: ../interdiff_data/prompt_split_100.pt
+  split: ../interdiff_data/prompt_split.pt
   transform:
     ligand_atom_mode: add_aromatic
     random_rot: False
@@ -9,7 +9,7 @@ data:
 model:
   model_mean_type: C0  # ['noise', 'C0']
   beta_schedule: sigmoid
-  beta_start: 1.e-7bjobs
+  beta_start: 1.e-7
   beta_end: 2.e-3
   v_beta_schedule: cosine
   v_beta_s: 0.01
