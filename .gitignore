@@ -6,3 +6,6 @@
 
 data
 logs_diffusion
+temp
+outputs_pdb
+models/__pycache__

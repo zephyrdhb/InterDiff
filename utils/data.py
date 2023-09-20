@@ -217,8 +217,7 @@ class PDBProtein(object):
         selected = []
         sel_idx = set()
         for i, residue in enumerate(self.residues):
-            distance = (((residue['coords'][:, None, :] - ligand['pos'][None, :, :]) ** 2).sum(
-                -1) ** 0.5).min()
+            distance = (((residue['coords'][:, None, :] - ligand['pos'][None, :, :]) ** 2).sum(-1) ** 0.5).min()
             # distance = np.linalg.norm(residue[criterion] - center, ord=2)
             if distance < radius and i not in sel_idx:
                 selected.append(residue)

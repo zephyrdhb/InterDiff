@@ -1,13 +1,46 @@
 model:
-  checkpoint: ./pretrained_models/training_2023_07_11__45emb/checkpoints/5640.pt
+  checkpoint: ./logs_diffusion/training_2023_09_15__16_52_23/checkpoints/91100.pt
   ##
   model_mean_type: C0  # ['noise', 'C0']
+  beta_schedule: sigmoid
+  beta_start: 1.e-7
+  beta_end: 2.e-3
+  v_beta_schedule: cosine
+  v_beta_s: 0.01
+  num_diffusion_timesteps: 1000
+  loss_v_weight: 100.
+  sample_time_method: symmetric  # ['importance', 'symmetric']
+
+  time_emb_dim: 0
+  time_emb_mode: simple
+  center_pos_mode: protein
+
+  node_indicator: True
+  model_type: prompt # uni_o2 modified by duhuabin
+  num_blocks: 1
+  num_layers: 9
+  hidden_dim: 128
+  n_heads: 16
+  edge_feat_dim: 4  # edge type feat
+  num_r_gaussian: 15 # modified by duhuabin
+  knn: 32 # !
+  num_node_types: 8
+  act_fn: relu
+  norm: True
+  cutoff_mode: knn  # [radius, none]
+  ew_net_type: global  # [r, m, none]
+  num_x2h: 1
+  num_h2x: 1
+  r_max: 10.
+  x2h_out_fc: False
+  sync_twoup: False
 
 sample:
   seed: 2021
-  num_samples: 10
+  num_samples: 500
   num_steps: 1000
   pos_only: False
   center_pos_mode: protein
   sample_num_atoms: prior
+
 

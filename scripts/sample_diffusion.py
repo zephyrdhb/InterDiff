@@ -14,7 +14,7 @@ import utils.misc as misc
 import utils.transforms as trans
 from datasets import get_dataset
 from datasets.pl_data import FOLLOW_BATCH
-from models.molopt_score_model import ScorePosNet3D, log_sample_categorical
+from models.new_score_model import ScorePosNet3D, log_sample_categorical
 from utils.evaluation import atom_num
 
 

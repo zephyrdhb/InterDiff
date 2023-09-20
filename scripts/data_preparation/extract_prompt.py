@@ -241,7 +241,7 @@ if __name__ == "__main__":
                 else:
                     print('detect one interaction involves more than one residues')
 
-            # remove the residue involves more than one interaction
+        # remove the residue involves more than one interaction
         temp, del_res_ids = set(), set()
         for prompt_id, res_ids in temp_prompt.items():
             # detect if any residues with more than one interaction

@@ -34,11 +34,16 @@ def pdb_to_pocket_data(pdb_path):
 
 
 if __name__ == '__main__':
+    import faulthandler
+
+    faulthandler.enable()
+    # 下面是原代码
+
     parser = argparse.ArgumentParser()
     parser.add_argument('config', type=str)
     parser.add_argument('--pdb_path', type=str)
     parser.add_argument('--device', type=str, default='cuda:0')
-    parser.add_argument('--batch_size', type=int, default=1)
+    parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--result_path', type=str, default='./outputs_pdb')
     parser.add_argument('--num_samples', type=int)
     args = parser.parse_args()
@@ -110,7 +115,7 @@ if __name__ == '__main__':
         'pred_ligand_pos_traj': pred_pos_traj,
         'pred_ligand_v_traj': pred_v_traj
     }
-    logger.info('Sample done!')
+    logger.info('Sample done! Asshole!')
 
     # reconstruction
     gen_mols = []

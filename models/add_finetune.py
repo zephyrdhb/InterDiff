@@ -1,12 +1,11 @@
-from typing import Union
 import torch, math
 import torch.nn as nn
-import torch.nn.functional as F
+# import torch.nn.functional as F
 from transformers.activations import ACT2FN
 from models.prompt_transformer import AttentionLayerO2TwoUpdateNodeGeneral
-import numpy as np
-from models.common import MLP
-from torch_scatter import scatter_mean
+# import numpy as np
+# from models.common import MLP
+# from torch_scatter import scatter_mean
 from einops import rearrange
 from torch import einsum
 import torch

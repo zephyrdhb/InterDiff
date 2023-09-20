@@ -126,6 +126,9 @@ if __name__ == '__main__':
         for i in range(config.train.n_acc_batch):
             batch = next(train_iterator).to(args.device)
 
+            _, protein_len = torch.unique(batch.protein_element_batch, return_counts=True)  # add by dhb
+            _, ligand_len = torch.unique(batch.ligand_element_batch, return_counts=True)  # add by dhb
+
             protein_noise = torch.randn_like(batch.protein_pos) * config.train.pos_noise_std
             gt_protein_pos = batch.protein_pos + protein_noise
             results = model.get_diffusion_loss(
@@ -136,9 +139,9 @@ if __name__ == '__main__':
                 ligand_pos=batch.ligand_pos,
                 ligand_v=batch.ligand_atom_feature_full,
                 batch_ligand=batch.ligand_element_batch,
-                interaction=batch['interaction'],  # added by duhuabin
-                protein_len=len(batch.protein_element_batch),  # added by duhuabin
-                ligand_len=len(batch.ligand_element_batch),  # added by duhuabin
+                interaction=batch['interaction'],  # added by dhb
+                protein_len=protein_len.tolist(),  # added by dhb
+                ligand_len=ligand_len.tolist(),  # added by dhb
             )
             loss, loss_pos, loss_v = results['loss'], results['loss_pos'], results['loss_v']
             loss = loss / config.train.n_acc_batch
@@ -173,6 +176,9 @@ if __name__ == '__main__':
                 batch_size = batch.num_graphs
                 t_loss, t_loss_pos, t_loss_v = [], [], []
 
+                _, protein_len = torch.unique(batch.protein_element_batch, return_counts=True)  # add by dhb
+                _, ligand_len = torch.unique(batch.ligand_element_batch, return_counts=True)  # add by dhb
+
                 for t in np.linspace(0, model.num_timesteps - 1, 10).astype(int):
                     time_step = torch.tensor([t] * batch_size).to(args.device)
                     results = model.get_diffusion_loss(
@@ -186,8 +192,8 @@ if __name__ == '__main__':
                         time_step=time_step,
 
                         interaction=batch['interaction'],  # added by duhuabin
-                        protein_len=len(batch.protein_element_batch),  # added by duhuabin
-                        ligand_len=len(batch.ligand_element_batch),  # added by duhuabin
+                        protein_len=protein_len.tolist(),  # added by duhuabin
+                        ligand_len=ligand_len.tolist(),  # added by duhuabin
                     )
                     loss, loss_pos, loss_v = results['loss'], results['loss_pos'], results['loss_v']
 
