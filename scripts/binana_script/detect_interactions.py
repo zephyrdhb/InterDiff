@@ -5,6 +5,8 @@ import os
 import argparse
 import numpy as np
 from multiprocessing import Pool
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 class binana_command():
@@ -136,3 +138,33 @@ if __name__ == "__main__":
             for k, v in result.items():
                 unique_dict[k] += v
     print(unique_dict)
+
+    res_ids = set()
+    for k, v in unique_dict.items():
+        res_ids = res_ids.union(v)
+    res_ids = sorted(res_ids)
+    # 创建一个空矩阵来存储频数
+    interaction_matrix = np.zeros((len(res_ids), len(unique_dict.keys())))
+
+    # 填充矩阵的相应位置
+    for i, interaction_type in enumerate(unique_dict.keys()):
+        for residue in unique_dict[interaction_type]:
+            interaction_matrix[res_ids.index(residue), i] += 1
+
+    # 设置图形大小
+    plt.figure(figsize=(10, 8))
+
+    # 使用seaborn库的热力图函数绘制热力图
+    sns.heatmap(interaction_matrix, cmap='Blues', annot=True, cbar=True)
+
+    # 设置坐标轴标签
+    plt.xlabel('Interaction Type', fontdict={'fontsize': 15})
+    plt.ylabel('Residue Number', fontdict={'fontsize': 15})
+
+    # 设置相互作用类型标签
+    interaction_types = list(unique_dict.keys())
+    plt.xticks(np.arange(len(interaction_types)) + 0.5, interaction_types)
+    plt.yticks(np.arange(len(res_ids)) + 0.5, res_ids)
+    plt.tight_layout()
+    # 显示图形
+    plt.show()
