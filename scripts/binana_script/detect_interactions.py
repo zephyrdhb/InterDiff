@@ -74,6 +74,7 @@ class binana_command():
 
 def process_interactions(data):
     interactions = ['cationPiInteractions', 'halogenBonds', 'hydrogenBonds', 'piPiStackingInteractions', 'saltBridges']
+    interactions = interactions[:-1]
     my_dict = {item: [] for item in interactions}
     for key in interactions:
         res_ids = []
@@ -94,7 +95,7 @@ def run_binana_command(arg):
         bn = binana_command(rec_filename=rec, lig_filename=lig, temp_dir=temp_dir, unique_id=unique_id)
         bn.run()
         data = bn.get_josn()
-        return process_interactions(data)
+        return data
     except Exception as e:
         return None
 
@@ -135,6 +136,7 @@ if __name__ == "__main__":
     unique_dict = {'cationPiInteractions': [], 'halogenBonds': [], 'hydrogenBonds': [], 'piPiStackingInteractions': [], 'saltBridges': []}
     for result in results:
         if result:
+            result = process_interactions(result)
             for k, v in result.items():
                 unique_dict[k] += v
     print(unique_dict)
@@ -152,10 +154,10 @@ if __name__ == "__main__":
             interaction_matrix[res_ids.index(residue), i] += 1
 
     # 设置图形大小
-    plt.figure(figsize=(10, 8))
+    plt.figure(figsize=(10, 8), dpi=300)
 
     # 使用seaborn库的热力图函数绘制热力图
-    sns.heatmap(interaction_matrix, cmap='Blues', annot=True, cbar=True)
+    sns.heatmap(interaction_matrix, cmap='Blues', annot=True, cbar=True, fmt='.0f')
 
     # 设置坐标轴标签
     plt.xlabel('Interaction Type', fontdict={'fontsize': 15})

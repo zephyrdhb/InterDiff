@@ -1,7 +1,7 @@
 data:
   name: pl
-  path: ../interdiff_data/pocket_with_prompt.lmdb
-  split: ../interdiff_data/prompt_split.pt
+  path: ../interdiff_data/pocket_prompt.lmdb
+  split: ../interdiff_data/prompt_split_new.pt
   transform:
     ligand_atom_mode: add_aromatic
     random_rot: False
