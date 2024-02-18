@@ -3,16 +3,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/guanjq/targetdiff/blob/main/LICIENCE)
 
 ## Results
-1. Sampling molecules _sdf_ files from 3D-SBDD, GaphBP, Pocket2Mol, TargetDiff and our InterDiff can be obtained from [here](https://zenodo.org/records/10205723).
+1. Sampling molecules _sdf_ files from 3D-SBDD, GaphBP, Pocket2Mol, TargetDiff and our InterDiff are released in _Zenodo_, you can get the data [here](https://zenodo.org/records/10205723).
 
-2. The project code has also been deployed to [Google Drive](https://drive.google.com/drive/folders/1P1sedbWrQ_xQcYR9X0V0zxbZYNgAAzM_) and Google Collab, and you can directly run the test code through the [interdiff.ipynb](https://drive.google.com/file/d/1ia_CouDu4dDOTw6--wirviF1XkoH4arj/view?usp=drive_link) file.
+2. The project code has also been deployed to [*Google Drive*](https://drive.google.com/drive/folders/1P1sedbWrQ_xQcYR9X0V0zxbZYNgAAzM_) and *Google Collab*, and you can directly run the test code through the [interdiff.ipynb](https://drive.google.com/file/d/1ia_CouDu4dDOTw6--wirviF1XkoH4arj/view?usp=drive_link) file.
 
    
 
    ![img](_env/result.jpg)
-
-## Pretrained Weight
-You can get pretrained model weight [here](https://drive.google.com/file/d/10zBqQ4YBfh7bbcHNrhZk20INXmr-bSg9/view?usp=drive_link), and put this _*.pt_ file in in [pretrained/checkpoints](pretrained/checkpoints).
 
 ## Python Environment Install
 Please use [_Mamba_](https://mamba.readthedocs.io/en/latest/micromamba-installation.html) to manage the environment.
@@ -65,7 +62,12 @@ If you want to process the dataset from scratch, you need to download CrossDocke
 ```bash
 python train_diffusion.py # Only 100 data are trained here for illustration. You can change the file to train whole dataset.
 ```
+## Pretrained Weight
+
+You can get pretrained model weight [here](https://drive.google.com/file/d/10zBqQ4YBfh7bbcHNrhZk20INXmr-bSg9/view?usp=drive_link), and put this _*.pt_ file in in [pretrained/checkpoints](pretrained/checkpoints).
+
 ## Evaluating
+
 #### 1. Generate data for a given test_set.
 
 Here we sample ligands in the test set. Processed test set are in the path [data/test_data.pt](data). we generat one ligand for each target. In [sample.py](sample.py) script, we can sample multiple targets at the same time. The batch_size is 10 and we sample for ten different targets, generating one ligand for each target.
