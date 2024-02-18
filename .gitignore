@@ -4,7 +4,6 @@
 # OS FILE
 .DS_Store
 
-data
 logs_diffusion
 temp
 outputs_pdb
