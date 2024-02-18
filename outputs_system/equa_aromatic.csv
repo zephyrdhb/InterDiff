@@ -1,0 +1,11 @@
+protein_file,ligand_file,smiles,ori_inter,generate_inter,success_rate
+test_set/PYRD_TRYCC_2_314_catalytic_0/3w83_B_rec.pdb,0.pdb,C=CN=CC.CC(=N)CCl,[],[],1.0
+test_set/CHIB1_ASPFM_39_433_0/3chc_B_rec.pdb,1.pdb,C=C(COOCO)CC(C)=C=CO.CC1(C=O)CCNNC1,"[('ASP', 24, 'hydrogen'), ('TRP', 33, 'caption'), ('TYR', 23, 'hydrogen')]","[('TYR', 0, 'hydrogen')]",0.0
+test_set/IPMK_HUMAN_49_416_0/5w2g_A_rec.pdb,2.pdb,C=C(CN=C1CC=CCN1)C(NC1=C=CCC(=N)C=C1)C1CCNCN1N,"[('VAL', 16, 'hydrogen'), ('LYS', 4, 'hydrogen'), ('ASP', 21, 'hydrogen'), ('GLU', 14, 'hydrogen')]","[('GLU', 14, 'hydrogen'), ('VAL', 16, 'hydrogen')]",0.5
+test_set/P2Y12_HUMAN_1_342_0/4pxz_A_rec.pdb,3.pdb,CC(N)CC1(CC2=CC(=O)CC=C(N)CC3=CC2CCCC3)CCCCC(O)C1,"[('ARG', 4, 'hydrogen'), ('CYS', 36, 'hydrogen'), ('CYS', 7, 'hydrogen'), ('LYS', 40, 'hydrogen'), ('HIS', 44, 'hydrogen'), ('TYR', 15, 'pi'), ('ASN', 48, 'hydrogen'), ('ARG', 56, 'hydrogen'), ('TYR', 57, 'hydrogen'), ('GLN', 59, 'hydrogen'), ('LYS', 62, 'hydrogen')]","[('LYS', 40, 'hydrogen')]",0.09090909090909091
+test_set/NOS3_HUMAN_65_480_0/4kcq_A_rec.pdb,4.pdb,C=CC(=C)C1CC(O)CCC(C=O)C2CCCC(C(C=C)C(=N)N)C2C1,"[('GLU', 28, 'hydrogen')]",[],0.0
+test_set/NOS3_HUMAN_65_480_0/1rs9_A_rec.pdb,5.pdb,N=CC(=N)CCC=C=C(C=O)CCO,"[('TRP', 18, 'hydrogen'), ('GLU', 22, 'hydrogen')]","[('TRP', 18, 'hydrogen')]",0.5
+test_set/CCPR_YEAST_69_361_0/1a2g_A_rec.pdb,6.pdb,C=CC(S)CC(CN)CO,"[('ARG', 3, 'caption'), ('SER', 22, 'hydrogen')]",[],0.0
+test_set/CDK6_HUMAN_1_312_0/2f2c_B_rec.pdb,7.pdb,CC(=S)CC1=C=CNC=C=CCC(CCC2CCC2=O)=C1,"[('LYS', 8, 'hydrogen'), ('VAL', 19, 'hydrogen')]",[],0.0
+test_set/CDK6_HUMAN_1_312_0/4aua_A_rec.pdb,8.pdb,OOC1C=C=CCC2CCC(O)CCC2C1,[],[],1.0
+test_set/CHOD_BREST_46_552_0/1coy_A_rec.pdb,9.pdb,C=C(C)C1C2CCCCCC3=C=CCCC4=CC1(CC(O)=C=CC(O)=C4)C32,[],[],1.0

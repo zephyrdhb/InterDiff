@@ -1,0 +1,389 @@
+[2023-11-13 22:09:07,249::train::INFO] Namespace(config='./configs/training.yml', device='cuda:2', logdir='./logs_diffusion', reschedule=False, tag='', train_report_iter=20)
+[2023-11-13 22:09:07,250::train::INFO] {'data': {'name': 'pl', 'path': './', 'split': './prompt_split.pt', 'transform': {'ligand_atom_mode': 'add_aromatic', 'random_rot': False}}, 'model': {'model_mean_type': 'C0', 'beta_schedule': 'advance', 'beta_start': 1e-07, 'beta_end': 0.002, 'v_beta_schedule': 'cosine', 'v_beta_s': 0.01, 'num_diffusion_timesteps': 1000, 'loss_v_weight': 100.0, 'sample_time_method': 'symmetric', 'time_emb_dim': 6, 'time_emb_mode': 'sin', 'center_pos_mode': 'protein', 'time_dependent_loss': False, 'node_indicator': True, 'model_type': 'prompt', 'num_blocks': 1, 'num_layers': 6, 'hidden_dim': 128, 'n_heads': 16, 'edge_feat_dim': 4, 'num_r_gaussian': 15, 'knn': 32, 'num_node_types': 8, 'act_fn': 'mish', 'norm': True, 'cutoff_mode': 'knn', 'ew_net_type': 'global', 'num_x2h': 1, 'num_h2x': 1, 'r_max': 7.0, 'x2h_out_fc': False, 'sync_twoup': False}, 'train': {'seed': 2021, 'batch_size': 10, 'num_workers': 0, 'n_acc_batch': 20, 'max_iters': 8000, 'val_freq': 60, 'pos_noise_std': 0.1, 'max_grad_norm': 10.0, 'bond_loss_weight': 1.0, 'optimizer': {'type': 'adam', 'lr': 0.0001, 'beta1': 0.95, 'beta2': 0.999}, 'scheduler': {'type': 'plateau', 'factor': 0.8, 'patience': 3, 'min_lr': 5e-06}}}
+[2023-11-13 22:09:07,252::train::INFO] Loading dataset...
+[2023-11-13 22:09:07,286::train::INFO] Training: 117475 Validation: 591
+[2023-11-13 22:09:07,287::train::INFO] Building model...
+[2023-11-13 22:09:10,313::train::INFO] # trainable parameters: 14.6369 M
+[2023-11-13 22:12:20,560::train::INFO] [Train] Iter 20 | Loss 0.028348 (pos 0.261621 | v 0.000437 | cls 0.000000) | Lr: 0.000100 | Grad Norm: 61704.480469
+[2023-11-13 22:15:28,643::train::INFO] [Train] Iter 40 | Loss 0.054055 (pos 0.516866 | v 0.000474 | cls 0.000000) | Lr: 0.000100 | Grad Norm: 63082.257812
+[2023-11-13 22:18:36,362::train::INFO] [Train] Iter 60 | Loss 0.052748 (pos 0.499474 | v 0.000560 | cls 0.000002) | Lr: 0.000100 | Grad Norm: 44401.277344
+[2023-11-13 22:20:15,055::train::INFO] [Validate] Iter 00060 | Loss 0.131001 | Loss pos 0.063404 | Loss v 0.041909 e-3 | Loss cls 0.000002 | Avg atom auroc 0.966542
+[2023-11-13 22:20:15,057::train::INFO] [Validate] Best val loss achieved: 0.131001
+[2023-11-13 22:23:24,239::train::INFO] [Train] Iter 80 | Loss 0.036931 (pos 0.338368 | v 0.000619 | cls 0.000000) | Lr: 0.000100 | Grad Norm: 60421.132812
+[2023-11-13 22:26:33,255::train::INFO] [Train] Iter 100 | Loss 0.089210 (pos 0.866279 | v 0.000516 | cls 0.000048) | Lr: 0.000100 | Grad Norm: 59508.496094
+[2023-11-13 22:29:40,780::train::INFO] [Train] Iter 120 | Loss 0.054737 (pos 0.519097 | v 0.000565 | cls 0.000002) | Lr: 0.000100 | Grad Norm: 52000.093750
+[2023-11-13 22:31:19,258::train::INFO] [Validate] Iter 00120 | Loss 0.132927 | Loss pos 0.064332 | Loss v 0.042551 e-3 | Loss cls 0.000008 | Avg atom auroc 0.965168
+[2023-11-13 22:31:19,260::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-13 22:34:28,111::train::INFO] [Train] Iter 140 | Loss 0.031531 (pos 0.285249 | v 0.000601 | cls 0.000000) | Lr: 0.000100 | Grad Norm: 53837.257812
+[2023-11-13 22:37:35,437::train::INFO] [Train] Iter 160 | Loss 0.049955 (pos 0.461082 | v 0.000769 | cls 0.000002) | Lr: 0.000100 | Grad Norm: 45180.542969
+[2023-11-13 22:40:42,855::train::INFO] [Train] Iter 180 | Loss 0.070247 (pos 0.672072 | v 0.000608 | cls 0.000001) | Lr: 0.000100 | Grad Norm: 44081.636719
+[2023-11-13 22:42:21,231::train::INFO] [Validate] Iter 00180 | Loss 0.132801 | Loss pos 0.064230 | Loss v 0.043363 e-3 | Loss cls 0.000005 | Avg atom auroc 0.965242
+[2023-11-13 22:42:21,233::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-13 22:45:29,601::train::INFO] [Train] Iter 200 | Loss 0.040069 (pos 0.380753 | v 0.000399 | cls 0.000002) | Lr: 0.000100 | Grad Norm: 37835.933594
+[2023-11-13 22:48:36,964::train::INFO] [Train] Iter 220 | Loss 0.050766 (pos 0.481373 | v 0.000526 | cls 0.000000) | Lr: 0.000100 | Grad Norm: 38981.667969
+[2023-11-13 22:51:46,250::train::INFO] [Train] Iter 240 | Loss 0.053170 (pos 0.509595 | v 0.000442 | cls 0.000004) | Lr: 0.000100 | Grad Norm: 44888.437500
+[2023-11-13 22:53:24,604::train::INFO] [Validate] Iter 00240 | Loss 0.132991 | Loss pos 0.064323 | Loss v 0.043382 e-3 | Loss cls 0.000006 | Avg atom auroc 0.963592
+[2023-11-13 22:53:24,606::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-13 22:56:33,737::train::INFO] [Train] Iter 260 | Loss 0.054869 (pos 0.520458 | v 0.000565 | cls 0.000000) | Lr: 0.000100 | Grad Norm: 39499.222656
+[2023-11-13 22:59:41,755::train::INFO] [Train] Iter 280 | Loss 0.034538 (pos 0.327797 | v 0.000352 | cls 0.000004) | Lr: 0.000100 | Grad Norm: 53992.781250
+[2023-11-13 23:02:50,253::train::INFO] [Train] Iter 300 | Loss 0.030323 (pos 0.285782 | v 0.000349 | cls 0.000001) | Lr: 0.000100 | Grad Norm: 47390.960938
+[2023-11-13 23:04:28,639::train::INFO] [Validate] Iter 00300 | Loss 0.134203 | Loss pos 0.064838 | Loss v 0.045199 e-3 | Loss cls 0.000007 | Avg atom auroc 0.964243
+[2023-11-13 23:04:28,641::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-13 23:07:36,856::train::INFO] [Train] Iter 320 | Loss 0.062508 (pos 0.587505 | v 0.000752 | cls 0.000000) | Lr: 0.000080 | Grad Norm: 44142.761719
+[2023-11-13 23:10:44,285::train::INFO] [Train] Iter 340 | Loss 0.078700 (pos 0.758443 | v 0.000571 | cls 0.000000) | Lr: 0.000080 | Grad Norm: 54833.449219
+[2023-11-13 23:13:50,769::train::INFO] [Train] Iter 360 | Loss 0.035256 (pos 0.327788 | v 0.000495 | cls 0.000006) | Lr: 0.000080 | Grad Norm: 53362.957031
+[2023-11-13 23:15:29,106::train::INFO] [Validate] Iter 00360 | Loss 0.133085 | Loss pos 0.064323 | Loss v 0.044342 e-3 | Loss cls 0.000005 | Avg atom auroc 0.964215
+[2023-11-13 23:15:29,108::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-13 23:18:37,726::train::INFO] [Train] Iter 380 | Loss 0.087863 (pos 0.850030 | v 0.000572 | cls 0.000005) | Lr: 0.000080 | Grad Norm: 42342.679688
+[2023-11-13 23:21:47,312::train::INFO] [Train] Iter 400 | Loss 0.078438 (pos 0.747814 | v 0.000731 | cls 0.000006) | Lr: 0.000080 | Grad Norm: 49512.324219
+[2023-11-13 23:24:55,338::train::INFO] [Train] Iter 420 | Loss 0.044740 (pos 0.422683 | v 0.000494 | cls 0.000000) | Lr: 0.000080 | Grad Norm: 45494.250000
+[2023-11-13 23:26:38,738::train::INFO] [Validate] Iter 00420 | Loss 0.133733 | Loss pos 0.064680 | Loss v 0.043686 e-3 | Loss cls 0.000003 | Avg atom auroc 0.963809
+[2023-11-13 23:26:38,740::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-13 23:29:47,702::train::INFO] [Train] Iter 440 | Loss 0.062398 (pos 0.598301 | v 0.000508 | cls 0.000585) | Lr: 0.000080 | Grad Norm: 51370.339844
+[2023-11-13 23:32:55,387::train::INFO] [Train] Iter 460 | Loss 0.077119 (pos 0.745193 | v 0.000520 | cls 0.000001) | Lr: 0.000080 | Grad Norm: 46579.898438
+[2023-11-13 23:36:02,892::train::INFO] [Train] Iter 480 | Loss 0.075223 (pos 0.705857 | v 0.000928 | cls 0.000003) | Lr: 0.000080 | Grad Norm: 55346.546875
+[2023-11-13 23:37:46,718::train::INFO] [Validate] Iter 00480 | Loss 0.133499 | Loss pos 0.064548 | Loss v 0.043990 e-3 | Loss cls 0.000003 | Avg atom auroc 0.964055
+[2023-11-13 23:37:46,720::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-13 23:40:54,875::train::INFO] [Train] Iter 500 | Loss 0.077218 (pos 0.754625 | v 0.000351 | cls 0.000001) | Lr: 0.000080 | Grad Norm: 32853.812500
+[2023-11-13 23:44:02,619::train::INFO] [Train] Iter 520 | Loss 0.071175 (pos 0.678720 | v 0.000661 | cls 0.000000) | Lr: 0.000080 | Grad Norm: 34356.351562
+[2023-11-13 23:47:10,944::train::INFO] [Train] Iter 540 | Loss 0.070586 (pos 0.687939 | v 0.000358 | cls 0.000042) | Lr: 0.000080 | Grad Norm: 39239.789062
+[2023-11-13 23:48:49,441::train::INFO] [Validate] Iter 00540 | Loss 0.134577 | Loss pos 0.064681 | Loss v 0.052120 e-3 | Loss cls 0.000003 | Avg atom auroc 0.964157
+[2023-11-13 23:48:49,443::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-13 23:51:57,383::train::INFO] [Train] Iter 560 | Loss 0.032452 (pos 0.295939 | v 0.000572 | cls 0.000001) | Lr: 0.000064 | Grad Norm: 43471.000000
+[2023-11-13 23:55:04,725::train::INFO] [Train] Iter 580 | Loss 0.043247 (pos 0.411291 | v 0.000424 | cls 0.000000) | Lr: 0.000064 | Grad Norm: 36202.117188
+[2023-11-13 23:58:13,580::train::INFO] [Train] Iter 600 | Loss 0.044700 (pos 0.415994 | v 0.000620 | cls 0.000000) | Lr: 0.000064 | Grad Norm: 35813.714844
+[2023-11-13 23:59:52,113::train::INFO] [Validate] Iter 00600 | Loss 0.134059 | Loss pos 0.064824 | Loss v 0.044079 e-3 | Loss cls 0.000004 | Avg atom auroc 0.964576
+[2023-11-13 23:59:52,115::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-14 00:03:02,138::train::INFO] [Train] Iter 620 | Loss 0.089080 (pos 0.867053 | v 0.000475 | cls 0.000000) | Lr: 0.000064 | Grad Norm: 39892.886719
+[2023-11-14 00:06:10,418::train::INFO] [Train] Iter 640 | Loss 0.044284 (pos 0.418939 | v 0.000478 | cls 0.000002) | Lr: 0.000064 | Grad Norm: 38684.550781
+[2023-11-14 00:09:22,680::train::INFO] [Train] Iter 660 | Loss 0.068812 (pos 0.658147 | v 0.000598 | cls 0.000160) | Lr: 0.000064 | Grad Norm: 30080.246094
+[2023-11-14 00:11:01,076::train::INFO] [Validate] Iter 00660 | Loss 0.133490 | Loss pos 0.064521 | Loss v 0.044418 e-3 | Loss cls 0.000007 | Avg atom auroc 0.964741
+[2023-11-14 00:11:01,078::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-14 00:14:10,338::train::INFO] [Train] Iter 680 | Loss 0.055470 (pos 0.534305 | v 0.000408 | cls 0.000002) | Lr: 0.000064 | Grad Norm: 39326.726562
+[2023-11-14 00:17:18,065::train::INFO] [Train] Iter 700 | Loss 0.090338 (pos 0.879152 | v 0.000484 | cls 0.000002) | Lr: 0.000064 | Grad Norm: 43334.175781
+[2023-11-14 00:20:28,305::train::INFO] [Train] Iter 720 | Loss 0.050436 (pos 0.478498 | v 0.000517 | cls 0.000000) | Lr: 0.000064 | Grad Norm: 35776.742188
+[2023-11-14 00:22:07,158::train::INFO] [Validate] Iter 00720 | Loss 0.133999 | Loss pos 0.064804 | Loss v 0.043875 e-3 | Loss cls 0.000003 | Avg atom auroc 0.965309
+[2023-11-14 00:22:07,160::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-14 00:25:22,368::train::INFO] [Train] Iter 740 | Loss 0.045050 (pos 0.434900 | v 0.000312 | cls 0.000001) | Lr: 0.000064 | Grad Norm: 47450.984375
+[2023-11-14 00:28:29,895::train::INFO] [Train] Iter 760 | Loss 0.063923 (pos 0.608696 | v 0.000611 | cls 0.000006) | Lr: 0.000064 | Grad Norm: 45814.570312
+[2023-11-14 00:31:37,852::train::INFO] [Train] Iter 780 | Loss 0.056391 (pos 0.541540 | v 0.000447 | cls 0.000011) | Lr: 0.000064 | Grad Norm: 33847.363281
+[2023-11-14 00:33:17,369::train::INFO] [Validate] Iter 00780 | Loss 0.132372 | Loss pos 0.064039 | Loss v 0.042921 e-3 | Loss cls 0.000002 | Avg atom auroc 0.964849
+[2023-11-14 00:33:17,371::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-14 00:36:26,116::train::INFO] [Train] Iter 800 | Loss 0.055562 (pos 0.527734 | v 0.000557 | cls 0.000031) | Lr: 0.000051 | Grad Norm: 39613.339844
+[2023-11-14 00:39:34,594::train::INFO] [Train] Iter 820 | Loss 0.038725 (pos 0.361357 | v 0.000518 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 39216.437500
+[2023-11-14 00:42:44,297::train::INFO] [Train] Iter 840 | Loss 0.078482 (pos 0.758273 | v 0.000531 | cls 0.000001) | Lr: 0.000051 | Grad Norm: 40524.093750
+[2023-11-14 00:44:23,909::train::INFO] [Validate] Iter 00840 | Loss 0.132441 | Loss pos 0.064005 | Loss v 0.044283 e-3 | Loss cls 0.000002 | Avg atom auroc 0.963752
+[2023-11-14 00:44:23,911::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-14 00:47:37,351::train::INFO] [Train] Iter 860 | Loss 0.070670 (pos 0.680723 | v 0.000520 | cls 0.000004) | Lr: 0.000051 | Grad Norm: 36705.945312
+[2023-11-14 00:50:48,242::train::INFO] [Train] Iter 880 | Loss 0.094563 (pos 0.917019 | v 0.000572 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 51650.035156
+[2023-11-14 00:54:00,502::train::INFO] [Train] Iter 900 | Loss 0.041624 (pos 0.392143 | v 0.000482 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 39557.769531
+[2023-11-14 00:55:39,284::train::INFO] [Validate] Iter 00900 | Loss 0.132719 | Loss pos 0.064209 | Loss v 0.042972 e-3 | Loss cls 0.000003 | Avg atom auroc 0.965187
+[2023-11-14 00:55:39,286::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-14 00:58:47,659::train::INFO] [Train] Iter 920 | Loss 0.049985 (pos 0.481397 | v 0.000369 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 35007.691406
+[2023-11-14 01:01:57,617::train::INFO] [Train] Iter 940 | Loss 0.035012 (pos 0.331976 | v 0.000363 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 45204.707031
+[2023-11-14 01:05:10,844::train::INFO] [Train] Iter 960 | Loss 0.056190 (pos 0.521003 | v 0.000818 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 42607.425781
+[2023-11-14 01:06:52,073::train::INFO] [Validate] Iter 00960 | Loss 0.131305 | Loss pos 0.063456 | Loss v 0.043926 e-3 | Loss cls 0.000002 | Avg atom auroc 0.964092
+[2023-11-14 01:06:52,075::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.131001 at iter 60
+[2023-11-14 01:10:06,486::train::INFO] [Train] Iter 980 | Loss 0.061807 (pos 0.591303 | v 0.000535 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 36789.589844
+[2023-11-14 01:13:14,004::train::INFO] [Train] Iter 1000 | Loss 0.093020 (pos 0.905964 | v 0.000485 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 35368.371094
+[2023-11-14 01:16:22,484::train::INFO] [Train] Iter 1020 | Loss 0.058145 (pos 0.559475 | v 0.000439 | cls 0.000047) | Lr: 0.000051 | Grad Norm: 41006.953125
+[2023-11-14 01:18:02,426::train::INFO] [Validate] Iter 01020 | Loss 0.130722 | Loss pos 0.063182 | Loss v 0.043551 e-3 | Loss cls 0.000004 | Avg atom auroc 0.965227
+[2023-11-14 01:18:02,428::train::INFO] [Validate] Best val loss achieved: 0.130722
+[2023-11-14 01:21:10,763::train::INFO] [Train] Iter 1040 | Loss 0.053747 (pos 0.518648 | v 0.000377 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 37983.746094
+[2023-11-14 01:24:17,716::train::INFO] [Train] Iter 1060 | Loss 0.048722 (pos 0.465730 | v 0.000430 | cls 0.000001) | Lr: 0.000051 | Grad Norm: 37671.136719
+[2023-11-14 01:27:26,015::train::INFO] [Train] Iter 1080 | Loss 0.043406 (pos 0.406351 | v 0.000554 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 38506.851562
+[2023-11-14 01:29:06,535::train::INFO] [Validate] Iter 01080 | Loss 0.132017 | Loss pos 0.063893 | Loss v 0.042295 e-3 | Loss cls 0.000001 | Avg atom auroc 0.966595
+[2023-11-14 01:29:06,537::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130722 at iter 1020
+[2023-11-14 01:32:15,247::train::INFO] [Train] Iter 1100 | Loss 0.064681 (pos 0.622436 | v 0.000487 | cls 0.000012) | Lr: 0.000051 | Grad Norm: 32613.775391
+[2023-11-14 01:35:27,749::train::INFO] [Train] Iter 1120 | Loss 0.036192 (pos 0.325157 | v 0.000735 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 34526.820312
+[2023-11-14 01:38:35,447::train::INFO] [Train] Iter 1140 | Loss 0.041803 (pos 0.388875 | v 0.000583 | cls 0.000001) | Lr: 0.000051 | Grad Norm: 36612.128906
+[2023-11-14 01:40:15,217::train::INFO] [Validate] Iter 01140 | Loss 0.132659 | Loss pos 0.064154 | Loss v 0.043482 e-3 | Loss cls 0.000002 | Avg atom auroc 0.965906
+[2023-11-14 01:40:15,219::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130722 at iter 1020
+[2023-11-14 01:43:25,342::train::INFO] [Train] Iter 1160 | Loss 0.063542 (pos 0.613236 | v 0.000443 | cls 0.000035) | Lr: 0.000051 | Grad Norm: 35230.910156
+[2023-11-14 01:46:35,197::train::INFO] [Train] Iter 1180 | Loss 0.047104 (pos 0.452538 | v 0.000370 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 43663.042969
+[2023-11-14 01:49:42,365::train::INFO] [Train] Iter 1200 | Loss 0.032146 (pos 0.313069 | v 0.000168 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 36397.160156
+[2023-11-14 01:51:25,017::train::INFO] [Validate] Iter 01200 | Loss 0.133398 | Loss pos 0.064558 | Loss v 0.042785 e-3 | Loss cls 0.000003 | Avg atom auroc 0.965948
+[2023-11-14 01:51:25,019::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130722 at iter 1020
+[2023-11-14 01:54:32,755::train::INFO] [Train] Iter 1220 | Loss 0.071682 (pos 0.683814 | v 0.000660 | cls 0.000000) | Lr: 0.000051 | Grad Norm: 42620.183594
+[2023-11-14 01:57:41,802::train::INFO] [Train] Iter 1240 | Loss 0.042047 (pos 0.393397 | v 0.000541 | cls 0.000002) | Lr: 0.000051 | Grad Norm: 30749.099609
+[2023-11-14 02:00:50,515::train::INFO] [Train] Iter 1260 | Loss 0.061466 (pos 0.579670 | v 0.000700 | cls 0.000021) | Lr: 0.000051 | Grad Norm: 44639.632812
+[2023-11-14 02:02:29,138::train::INFO] [Validate] Iter 01260 | Loss 0.132160 | Loss pos 0.063930 | Loss v 0.042949 e-3 | Loss cls 0.000004 | Avg atom auroc 0.965260
+[2023-11-14 02:02:29,140::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130722 at iter 1020
+[2023-11-14 02:05:37,742::train::INFO] [Train] Iter 1280 | Loss 0.103025 (pos 1.020549 | v 0.000194 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 64383.078125
+[2023-11-14 02:08:45,192::train::INFO] [Train] Iter 1300 | Loss 0.052503 (pos 0.514198 | v 0.000217 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 35649.593750
+[2023-11-14 02:11:53,243::train::INFO] [Train] Iter 1320 | Loss 0.048967 (pos 0.467359 | v 0.000446 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 36103.257812
+[2023-11-14 02:13:32,364::train::INFO] [Validate] Iter 01320 | Loss 0.132412 | Loss pos 0.064072 | Loss v 0.042642 e-3 | Loss cls 0.000005 | Avg atom auroc 0.966389
+[2023-11-14 02:13:32,366::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130722 at iter 1020
+[2023-11-14 02:16:42,222::train::INFO] [Train] Iter 1340 | Loss 0.039905 (pos 0.371906 | v 0.000543 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 33395.832031
+[2023-11-14 02:19:51,918::train::INFO] [Train] Iter 1360 | Loss 0.074477 (pos 0.716778 | v 0.000560 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 34261.578125
+[2023-11-14 02:22:59,230::train::INFO] [Train] Iter 1380 | Loss 0.054282 (pos 0.507527 | v 0.000706 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 42298.132812
+[2023-11-14 02:24:37,782::train::INFO] [Validate] Iter 01380 | Loss 0.131104 | Loss pos 0.063465 | Loss v 0.041718 e-3 | Loss cls 0.000002 | Avg atom auroc 0.967669
+[2023-11-14 02:24:37,784::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130722 at iter 1020
+[2023-11-14 02:27:48,019::train::INFO] [Train] Iter 1400 | Loss 0.071828 (pos 0.695661 | v 0.000452 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 37043.160156
+[2023-11-14 02:30:56,732::train::INFO] [Train] Iter 1420 | Loss 0.074337 (pos 0.727167 | v 0.000324 | cls 0.000001) | Lr: 0.000041 | Grad Norm: 35213.625000
+[2023-11-14 02:34:06,302::train::INFO] [Train] Iter 1440 | Loss 0.043083 (pos 0.415683 | v 0.000303 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 49117.605469
+[2023-11-14 02:35:47,996::train::INFO] [Validate] Iter 01440 | Loss 0.130901 | Loss pos 0.063335 | Loss v 0.042283 e-3 | Loss cls 0.000002 | Avg atom auroc 0.966656
+[2023-11-14 02:35:47,998::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130722 at iter 1020
+[2023-11-14 02:38:57,791::train::INFO] [Train] Iter 1460 | Loss 0.038119 (pos 0.349654 | v 0.000631 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 39325.062500
+[2023-11-14 02:42:07,160::train::INFO] [Train] Iter 1480 | Loss 0.054386 (pos 0.529751 | v 0.000282 | cls 0.000001) | Lr: 0.000041 | Grad Norm: 36548.390625
+[2023-11-14 02:45:15,304::train::INFO] [Train] Iter 1500 | Loss 0.068101 (pos 0.661297 | v 0.000394 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 42830.781250
+[2023-11-14 02:46:55,644::train::INFO] [Validate] Iter 01500 | Loss 0.130296 | Loss pos 0.063031 | Loss v 0.042325 e-3 | Loss cls 0.000002 | Avg atom auroc 0.966452
+[2023-11-14 02:46:55,646::train::INFO] [Validate] Best val loss achieved: 0.130296
+[2023-11-14 02:50:05,615::train::INFO] [Train] Iter 1520 | Loss 0.045647 (pos 0.433446 | v 0.000460 | cls 0.000014) | Lr: 0.000041 | Grad Norm: 46211.695312
+[2023-11-14 02:53:18,646::train::INFO] [Train] Iter 1540 | Loss 0.060708 (pos 0.586796 | v 0.000406 | cls 0.000001) | Lr: 0.000041 | Grad Norm: 37316.925781
+[2023-11-14 02:56:33,960::train::INFO] [Train] Iter 1560 | Loss 0.045215 (pos 0.439135 | v 0.000260 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 35607.683594
+[2023-11-14 02:58:15,538::train::INFO] [Validate] Iter 01560 | Loss 0.131902 | Loss pos 0.063842 | Loss v 0.042159 e-3 | Loss cls 0.000002 | Avg atom auroc 0.966276
+[2023-11-14 02:58:15,540::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130296 at iter 1500
+[2023-11-14 03:01:23,533::train::INFO] [Train] Iter 1580 | Loss 0.054977 (pos 0.524162 | v 0.000512 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 34668.843750
+[2023-11-14 03:04:31,642::train::INFO] [Train] Iter 1600 | Loss 0.081109 (pos 0.795969 | v 0.000302 | cls 0.000020) | Lr: 0.000041 | Grad Norm: 43950.496094
+[2023-11-14 03:07:41,775::train::INFO] [Train] Iter 1620 | Loss 0.060359 (pos 0.578585 | v 0.000500 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 32940.992188
+[2023-11-14 03:09:23,312::train::INFO] [Validate] Iter 01620 | Loss 0.131142 | Loss pos 0.063478 | Loss v 0.041860 e-3 | Loss cls 0.000001 | Avg atom auroc 0.966845
+[2023-11-14 03:09:23,314::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130296 at iter 1500
+[2023-11-14 03:12:31,147::train::INFO] [Train] Iter 1640 | Loss 0.039104 (pos 0.378051 | v 0.000260 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 36753.054688
+[2023-11-14 03:15:39,584::train::INFO] [Train] Iter 1660 | Loss 0.051707 (pos 0.488529 | v 0.000571 | cls 0.000027) | Lr: 0.000041 | Grad Norm: 32636.369141
+[2023-11-14 03:18:48,259::train::INFO] [Train] Iter 1680 | Loss 0.030425 (pos 0.275894 | v 0.000567 | cls 0.000016) | Lr: 0.000041 | Grad Norm: 38042.238281
+[2023-11-14 03:20:27,174::train::INFO] [Validate] Iter 01680 | Loss 0.131468 | Loss pos 0.063651 | Loss v 0.041629 e-3 | Loss cls 0.000003 | Avg atom auroc 0.966303
+[2023-11-14 03:20:27,176::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130296 at iter 1500
+[2023-11-14 03:23:42,947::train::INFO] [Train] Iter 1700 | Loss 0.058870 (pos 0.570593 | v 0.000362 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 35858.824219
+[2023-11-14 03:26:51,743::train::INFO] [Train] Iter 1720 | Loss 0.080567 (pos 0.779029 | v 0.000533 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 35574.414062
+[2023-11-14 03:29:59,659::train::INFO] [Train] Iter 1740 | Loss 0.076761 (pos 0.739909 | v 0.000554 | cls 0.000000) | Lr: 0.000041 | Grad Norm: 35603.898438
+[2023-11-14 03:31:38,899::train::INFO] [Validate] Iter 01740 | Loss 0.131680 | Loss pos 0.063744 | Loss v 0.041903 e-3 | Loss cls 0.000003 | Avg atom auroc 0.967359
+[2023-11-14 03:31:38,901::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130296 at iter 1500
+[2023-11-14 03:34:46,412::train::INFO] [Train] Iter 1760 | Loss 0.086451 (pos 0.830648 | v 0.000677 | cls 0.000026) | Lr: 0.000033 | Grad Norm: 36519.703125
+[2023-11-14 03:37:54,163::train::INFO] [Train] Iter 1780 | Loss 0.071027 (pos 0.683734 | v 0.000531 | cls 0.000002) | Lr: 0.000033 | Grad Norm: 38366.355469
+[2023-11-14 03:41:01,025::train::INFO] [Train] Iter 1800 | Loss 0.049735 (pos 0.483585 | v 0.000275 | cls 0.000000) | Lr: 0.000033 | Grad Norm: 40843.230469
+[2023-11-14 03:42:39,696::train::INFO] [Validate] Iter 01800 | Loss 0.130913 | Loss pos 0.063378 | Loss v 0.041533 e-3 | Loss cls 0.000002 | Avg atom auroc 0.967255
+[2023-11-14 03:42:39,698::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130296 at iter 1500
+[2023-11-14 03:45:48,185::train::INFO] [Train] Iter 1820 | Loss 0.084440 (pos 0.794052 | v 0.001001 | cls 0.000602) | Lr: 0.000033 | Grad Norm: 36540.152344
+[2023-11-14 03:48:56,511::train::INFO] [Train] Iter 1840 | Loss 0.074021 (pos 0.720001 | v 0.000404 | cls 0.000001) | Lr: 0.000033 | Grad Norm: 35185.843750
+[2023-11-14 03:52:04,453::train::INFO] [Train] Iter 1860 | Loss 0.038586 (pos 0.358337 | v 0.000550 | cls 0.000011) | Lr: 0.000033 | Grad Norm: 34082.351562
+[2023-11-14 03:53:44,472::train::INFO] [Validate] Iter 01860 | Loss 0.131601 | Loss pos 0.063676 | Loss v 0.042468 e-3 | Loss cls 0.000002 | Avg atom auroc 0.967980
+[2023-11-14 03:53:44,474::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130296 at iter 1500
+[2023-11-14 03:56:53,034::train::INFO] [Train] Iter 1880 | Loss 0.097426 (pos 0.952112 | v 0.000443 | cls 0.000004) | Lr: 0.000033 | Grad Norm: 41251.570312
+[2023-11-14 04:00:04,461::train::INFO] [Train] Iter 1900 | Loss 0.050384 (pos 0.484045 | v 0.000377 | cls 0.001880) | Lr: 0.000033 | Grad Norm: 38787.468750
+[2023-11-14 04:03:13,583::train::INFO] [Train] Iter 1920 | Loss 0.046131 (pos 0.431601 | v 0.000594 | cls 0.000001) | Lr: 0.000033 | Grad Norm: 34301.488281
+[2023-11-14 04:04:54,058::train::INFO] [Validate] Iter 01920 | Loss 0.130193 | Loss pos 0.063036 | Loss v 0.041192 e-3 | Loss cls 0.000001 | Avg atom auroc 0.967409
+[2023-11-14 04:04:54,060::train::INFO] [Validate] Best val loss achieved: 0.130193
+[2023-11-14 04:08:02,541::train::INFO] [Train] Iter 1940 | Loss 0.079047 (pos 0.768584 | v 0.000437 | cls 0.000033) | Lr: 0.000033 | Grad Norm: 41825.390625
+[2023-11-14 04:11:16,276::train::INFO] [Train] Iter 1960 | Loss 0.040830 (pos 0.385516 | v 0.000456 | cls 0.000000) | Lr: 0.000033 | Grad Norm: 33974.945312
+[2023-11-14 04:14:25,024::train::INFO] [Train] Iter 1980 | Loss 0.066260 (pos 0.640753 | v 0.000437 | cls 0.000000) | Lr: 0.000033 | Grad Norm: 36927.179688
+[2023-11-14 04:16:04,112::train::INFO] [Validate] Iter 01980 | Loss 0.131127 | Loss pos 0.063249 | Loss v 0.046277 e-3 | Loss cls 0.000001 | Avg atom auroc 0.967728
+[2023-11-14 04:16:04,114::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130193 at iter 1920
+[2023-11-14 04:19:11,819::train::INFO] [Train] Iter 2000 | Loss 0.030646 (pos 0.288693 | v 0.000355 | cls 0.000004) | Lr: 0.000033 | Grad Norm: 38564.839844
+[2023-11-14 04:22:19,111::train::INFO] [Train] Iter 2020 | Loss 0.033572 (pos 0.307951 | v 0.000555 | cls 0.000000) | Lr: 0.000033 | Grad Norm: 116416.585938
+[2023-11-14 04:25:26,383::train::INFO] [Train] Iter 2040 | Loss 0.063286 (pos 0.601356 | v 0.000630 | cls 0.000000) | Lr: 0.000033 | Grad Norm: 77050.085938
+[2023-11-14 04:27:06,484::train::INFO] [Validate] Iter 02040 | Loss 0.131676 | Loss pos 0.063733 | Loss v 0.042069 e-3 | Loss cls 0.000002 | Avg atom auroc 0.966613
+[2023-11-14 04:27:06,486::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130193 at iter 1920
+[2023-11-14 04:30:14,716::train::INFO] [Train] Iter 2060 | Loss 0.044292 (pos 0.406470 | v 0.000729 | cls 0.000003) | Lr: 0.000033 | Grad Norm: 79469.453125
+[2023-11-14 04:33:23,189::train::INFO] [Train] Iter 2080 | Loss 0.090913 (pos 0.884094 | v 0.000500 | cls 0.000034) | Lr: 0.000033 | Grad Norm: 71630.007812
+[2023-11-14 04:36:32,830::train::INFO] [Train] Iter 2100 | Loss 0.030380 (pos 0.282456 | v 0.000427 | cls 0.000000) | Lr: 0.000033 | Grad Norm: 64434.132812
+[2023-11-14 04:38:12,073::train::INFO] [Validate] Iter 02100 | Loss 0.130372 | Loss pos 0.063084 | Loss v 0.041985 e-3 | Loss cls 0.000005 | Avg atom auroc 0.967259
+[2023-11-14 04:38:12,075::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130193 at iter 1920
+[2023-11-14 04:41:23,698::train::INFO] [Train] Iter 2120 | Loss 0.045083 (pos 0.430410 | v 0.000408 | cls 0.000000) | Lr: 0.000033 | Grad Norm: 76357.156250
+[2023-11-14 04:44:34,089::train::INFO] [Train] Iter 2140 | Loss 0.069459 (pos 0.680486 | v 0.000282 | cls 0.000002) | Lr: 0.000033 | Grad Norm: 77648.726562
+[2023-11-14 04:47:41,441::train::INFO] [Train] Iter 2160 | Loss 0.063858 (pos 0.628133 | v 0.000209 | cls 0.000006) | Lr: 0.000033 | Grad Norm: 69996.343750
+[2023-11-14 04:49:21,306::train::INFO] [Validate] Iter 02160 | Loss 0.130825 | Loss pos 0.063276 | Loss v 0.042687 e-3 | Loss cls 0.000004 | Avg atom auroc 0.967009
+[2023-11-14 04:49:21,308::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130193 at iter 1920
+[2023-11-14 04:52:29,510::train::INFO] [Train] Iter 2180 | Loss 0.043918 (pos 0.406165 | v 0.000660 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 70963.320312
+[2023-11-14 04:55:40,970::train::INFO] [Train] Iter 2200 | Loss 0.058029 (pos 0.551599 | v 0.000574 | cls 0.000002) | Lr: 0.000026 | Grad Norm: 73479.687500
+[2023-11-14 04:58:55,639::train::INFO] [Train] Iter 2220 | Loss 0.048441 (pos 0.461829 | v 0.000451 | cls 0.000002) | Lr: 0.000026 | Grad Norm: 55694.449219
+[2023-11-14 05:00:34,996::train::INFO] [Validate] Iter 02220 | Loss 0.131355 | Loss pos 0.063519 | Loss v 0.043149 e-3 | Loss cls 0.000002 | Avg atom auroc 0.968004
+[2023-11-14 05:00:34,998::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130193 at iter 1920
+[2023-11-14 05:03:43,899::train::INFO] [Train] Iter 2240 | Loss 0.069841 (pos 0.683755 | v 0.000293 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 71454.468750
+[2023-11-14 05:06:52,526::train::INFO] [Train] Iter 2260 | Loss 0.046568 (pos 0.453285 | v 0.000248 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 67813.789062
+[2023-11-14 05:10:01,155::train::INFO] [Train] Iter 2280 | Loss 0.067913 (pos 0.655931 | v 0.000464 | cls 0.000001) | Lr: 0.000026 | Grad Norm: 103494.273438
+[2023-11-14 05:11:40,454::train::INFO] [Validate] Iter 02280 | Loss 0.130997 | Loss pos 0.063455 | Loss v 0.040844 e-3 | Loss cls 0.000002 | Avg atom auroc 0.967951
+[2023-11-14 05:11:40,458::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130193 at iter 1920
+[2023-11-14 05:14:48,291::train::INFO] [Train] Iter 2300 | Loss 0.069578 (pos 0.676931 | v 0.000377 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 77389.007812
+[2023-11-14 05:17:55,461::train::INFO] [Train] Iter 2320 | Loss 0.049085 (pos 0.468462 | v 0.000448 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 79191.351562
+[2023-11-14 05:21:08,374::train::INFO] [Train] Iter 2340 | Loss 0.059011 (pos 0.577055 | v 0.000261 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 70933.882812
+[2023-11-14 05:22:47,814::train::INFO] [Validate] Iter 02340 | Loss 0.130121 | Loss pos 0.062932 | Loss v 0.042551 e-3 | Loss cls 0.000002 | Avg atom auroc 0.967785
+[2023-11-14 05:22:47,817::train::INFO] [Validate] Best val loss achieved: 0.130121
+[2023-11-14 05:25:56,769::train::INFO] [Train] Iter 2360 | Loss 0.077791 (pos 0.752337 | v 0.000511 | cls 0.000001) | Lr: 0.000026 | Grad Norm: 73598.914062
+[2023-11-14 05:29:03,809::train::INFO] [Train] Iter 2380 | Loss 0.083371 (pos 0.809340 | v 0.000487 | cls 0.000004) | Lr: 0.000026 | Grad Norm: 90194.906250
+[2023-11-14 05:32:12,006::train::INFO] [Train] Iter 2400 | Loss 0.036827 (pos 0.346099 | v 0.000443 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 72931.289062
+[2023-11-14 05:33:51,329::train::INFO] [Validate] Iter 02400 | Loss 0.130693 | Loss pos 0.062928 | Loss v 0.048354 e-3 | Loss cls 0.000002 | Avg atom auroc 0.968371
+[2023-11-14 05:33:51,331::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.130121 at iter 2340
+[2023-11-14 05:36:59,209::train::INFO] [Train] Iter 2420 | Loss 0.037510 (pos 0.351958 | v 0.000463 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 76851.234375
+[2023-11-14 05:40:07,032::train::INFO] [Train] Iter 2440 | Loss 0.081538 (pos 0.794567 | v 0.000416 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 72771.585938
+[2023-11-14 05:43:14,470::train::INFO] [Train] Iter 2460 | Loss 0.059956 (pos 0.569365 | v 0.000604 | cls 0.000001) | Lr: 0.000026 | Grad Norm: 69528.546875
+[2023-11-14 05:44:56,679::train::INFO] [Validate] Iter 02460 | Loss 0.129687 | Loss pos 0.062780 | Loss v 0.041255 e-3 | Loss cls 0.000002 | Avg atom auroc 0.967841
+[2023-11-14 05:44:56,681::train::INFO] [Validate] Best val loss achieved: 0.129687
+[2023-11-14 05:48:06,857::train::INFO] [Train] Iter 2480 | Loss 0.091901 (pos 0.892044 | v 0.000539 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 72290.820312
+[2023-11-14 05:51:15,190::train::INFO] [Train] Iter 2500 | Loss 0.036350 (pos 0.338448 | v 0.000501 | cls 0.000016) | Lr: 0.000026 | Grad Norm: 70800.054688
+[2023-11-14 05:54:24,680::train::INFO] [Train] Iter 2520 | Loss 0.064322 (pos 0.617943 | v 0.000506 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 70553.812500
+[2023-11-14 05:56:03,933::train::INFO] [Validate] Iter 02520 | Loss 0.130162 | Loss pos 0.063037 | Loss v 0.040865 e-3 | Loss cls 0.000002 | Avg atom auroc 0.968142
+[2023-11-14 05:56:03,935::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.129687 at iter 2460
+[2023-11-14 05:59:11,561::train::INFO] [Train] Iter 2540 | Loss 0.049346 (pos 0.476159 | v 0.000346 | cls 0.000001) | Lr: 0.000026 | Grad Norm: 75869.242188
+[2023-11-14 06:02:17,966::train::INFO] [Train] Iter 2560 | Loss 0.068135 (pos 0.662644 | v 0.000374 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 78827.164062
+[2023-11-14 06:05:25,261::train::INFO] [Train] Iter 2580 | Loss 0.038599 (pos 0.365260 | v 0.000415 | cls 0.000002) | Lr: 0.000026 | Grad Norm: 77502.882812
+[2023-11-14 06:07:03,946::train::INFO] [Validate] Iter 02580 | Loss 0.129729 | Loss pos 0.062807 | Loss v 0.041125 e-3 | Loss cls 0.000003 | Avg atom auroc 0.969184
+[2023-11-14 06:07:03,948::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.129687 at iter 2460
+[2023-11-14 06:10:12,518::train::INFO] [Train] Iter 2600 | Loss 0.069915 (pos 0.658356 | v 0.000816 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 69925.867188
+[2023-11-14 06:13:20,398::train::INFO] [Train] Iter 2620 | Loss 0.043278 (pos 0.401198 | v 0.000632 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 70290.421875
+[2023-11-14 06:16:29,489::train::INFO] [Train] Iter 2640 | Loss 0.107736 (pos 1.053782 | v 0.000472 | cls 0.000003) | Lr: 0.000026 | Grad Norm: 86803.085938
+[2023-11-14 06:18:10,559::train::INFO] [Validate] Iter 02640 | Loss 0.131412 | Loss pos 0.063634 | Loss v 0.041426 e-3 | Loss cls 0.000002 | Avg atom auroc 0.968629
+[2023-11-14 06:18:10,561::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.129687 at iter 2460
+[2023-11-14 06:21:18,048::train::INFO] [Train] Iter 2660 | Loss 0.055281 (pos 0.532433 | v 0.000408 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 83608.093750
+[2023-11-14 06:24:25,022::train::INFO] [Train] Iter 2680 | Loss 0.035688 (pos 0.340328 | v 0.000331 | cls 0.000001) | Lr: 0.000026 | Grad Norm: 71140.734375
+[2023-11-14 06:27:33,790::train::INFO] [Train] Iter 2700 | Loss 0.048891 (pos 0.471435 | v 0.000350 | cls 0.000000) | Lr: 0.000026 | Grad Norm: 89421.414062
+[2023-11-14 06:29:12,297::train::INFO] [Validate] Iter 02700 | Loss 0.130996 | Loss pos 0.063432 | Loss v 0.041305 e-3 | Loss cls 0.000001 | Avg atom auroc 0.968775
+[2023-11-14 06:29:12,299::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.129687 at iter 2460
+[2023-11-14 06:32:20,473::train::INFO] [Train] Iter 2720 | Loss 0.047364 (pos 0.448464 | v 0.000504 | cls 0.000001) | Lr: 0.000021 | Grad Norm: 76683.156250
+[2023-11-14 06:35:28,954::train::INFO] [Train] Iter 2740 | Loss 0.055149 (pos 0.535160 | v 0.000327 | cls 0.000001) | Lr: 0.000021 | Grad Norm: 72089.601562
+[2023-11-14 06:38:38,955::train::INFO] [Train] Iter 2760 | Loss 0.061462 (pos 0.597860 | v 0.000334 | cls 0.000141) | Lr: 0.000021 | Grad Norm: 75658.406250
+[2023-11-14 06:40:20,451::train::INFO] [Validate] Iter 02760 | Loss 0.129034 | Loss pos 0.062496 | Loss v 0.040415 e-3 | Loss cls 0.000002 | Avg atom auroc 0.968834
+[2023-11-14 06:40:20,453::train::INFO] [Validate] Best val loss achieved: 0.129034
+[2023-11-14 06:43:29,078::train::INFO] [Train] Iter 2780 | Loss 0.058215 (pos 0.556890 | v 0.000505 | cls 0.000000) | Lr: 0.000021 | Grad Norm: 71576.179688
+[2023-11-14 06:46:36,264::train::INFO] [Train] Iter 2800 | Loss 0.043646 (pos 0.416540 | v 0.000398 | cls 0.000000) | Lr: 0.000021 | Grad Norm: 95467.664062
+[2023-11-14 06:49:44,682::train::INFO] [Train] Iter 2820 | Loss 0.066372 (pos 0.637693 | v 0.000520 | cls 0.000005) | Lr: 0.000021 | Grad Norm: 66403.289062
+[2023-11-14 06:51:24,334::train::INFO] [Validate] Iter 02820 | Loss 0.129677 | Loss pos 0.062795 | Loss v 0.040854 e-3 | Loss cls 0.000002 | Avg atom auroc 0.968513
+[2023-11-14 06:51:24,336::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.129034 at iter 2760
+[2023-11-14 06:54:32,563::train::INFO] [Train] Iter 2840 | Loss 0.040819 (pos 0.384078 | v 0.000482 | cls 0.000000) | Lr: 0.000021 | Grad Norm: 91869.601562
+[2023-11-14 06:57:40,325::train::INFO] [Train] Iter 2860 | Loss 0.053923 (pos 0.477721 | v 0.001230 | cls 0.000000) | Lr: 0.000021 | Grad Norm: 80532.242188
+[2023-11-14 07:00:49,303::train::INFO] [Train] Iter 2880 | Loss 0.097831 (pos 0.957104 | v 0.000424 | cls 0.000002) | Lr: 0.000021 | Grad Norm: 73475.757812
+[2023-11-14 07:02:29,853::train::INFO] [Validate] Iter 02880 | Loss 0.129911 | Loss pos 0.062925 | Loss v 0.040593 e-3 | Loss cls 0.000002 | Avg atom auroc 0.968706
+[2023-11-14 07:02:29,855::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.129034 at iter 2760
+[2023-11-14 07:05:36,858::train::INFO] [Train] Iter 2900 | Loss 0.051824 (pos 0.493387 | v 0.000497 | cls 0.000000) | Lr: 0.000021 | Grad Norm: 69913.328125
+[2023-11-14 07:08:43,023::train::INFO] [Train] Iter 2920 | Loss 0.052139 (pos 0.492321 | v 0.000581 | cls 0.000032) | Lr: 0.000021 | Grad Norm: 80639.578125
+[2023-11-14 07:11:52,101::train::INFO] [Train] Iter 2940 | Loss 0.058328 (pos 0.558880 | v 0.000488 | cls 0.000001) | Lr: 0.000021 | Grad Norm: 64556.316406
+[2023-11-14 07:13:30,917::train::INFO] [Validate] Iter 02940 | Loss 0.130180 | Loss pos 0.063045 | Loss v 0.040881 e-3 | Loss cls 0.000001 | Avg atom auroc 0.968529
+[2023-11-14 07:13:30,919::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.129034 at iter 2760
+[2023-11-14 07:16:38,442::train::INFO] [Train] Iter 2960 | Loss 0.064950 (pos 0.621661 | v 0.000557 | cls 0.000001) | Lr: 0.000021 | Grad Norm: 65658.093750
+[2023-11-14 07:19:45,652::train::INFO] [Train] Iter 2980 | Loss 0.080704 (pos 0.786925 | v 0.000402 | cls 0.000000) | Lr: 0.000021 | Grad Norm: 74518.125000
+[2023-11-14 07:22:56,611::train::INFO] [Train] Iter 3000 | Loss 0.047901 (pos 0.450403 | v 0.000570 | cls 0.000264) | Lr: 0.000021 | Grad Norm: 78153.312500
+[2023-11-14 07:24:38,424::train::INFO] [Validate] Iter 03000 | Loss 0.130455 | Loss pos 0.063197 | Loss v 0.040590 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969225
+[2023-11-14 07:24:38,426::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.129034 at iter 2760
+[2023-11-14 07:27:46,906::train::INFO] [Train] Iter 3020 | Loss 0.039869 (pos 0.375801 | v 0.000458 | cls 0.000000) | Lr: 0.000017 | Grad Norm: 75610.242188
+[2023-11-14 07:31:03,515::train::INFO] [Train] Iter 3040 | Loss 0.063919 (pos 0.617986 | v 0.000424 | cls 0.000018) | Lr: 0.000017 | Grad Norm: 64062.718750
+[2023-11-14 07:34:22,102::train::INFO] [Train] Iter 3060 | Loss 0.040974 (pos 0.384308 | v 0.000509 | cls 0.000000) | Lr: 0.000017 | Grad Norm: 73608.367188
+[2023-11-14 07:36:00,819::train::INFO] [Validate] Iter 03060 | Loss 0.129576 | Loss pos 0.062765 | Loss v 0.040456 e-3 | Loss cls 0.000001 | Avg atom auroc 0.968796
+[2023-11-14 07:36:00,821::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.129034 at iter 2760
+[2023-11-14 07:39:10,117::train::INFO] [Train] Iter 3080 | Loss 0.075452 (pos 0.728035 | v 0.000530 | cls 0.000001) | Lr: 0.000017 | Grad Norm: 64807.480469
+[2023-11-14 07:42:21,074::train::INFO] [Train] Iter 3100 | Loss 0.058292 (pos 0.557318 | v 0.000512 | cls 0.000000) | Lr: 0.000017 | Grad Norm: 72005.648438
+[2023-11-14 07:45:33,378::train::INFO] [Train] Iter 3120 | Loss 0.044843 (pos 0.431025 | v 0.000348 | cls 0.000006) | Lr: 0.000017 | Grad Norm: 88125.453125
+[2023-11-14 07:47:12,558::train::INFO] [Validate] Iter 03120 | Loss 0.129235 | Loss pos 0.062591 | Loss v 0.040511 e-3 | Loss cls 0.000002 | Avg atom auroc 0.968840
+[2023-11-14 07:47:12,560::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.129034 at iter 2760
+[2023-11-14 07:50:21,691::train::INFO] [Train] Iter 3140 | Loss 0.072288 (pos 0.696890 | v 0.000520 | cls 0.000000) | Lr: 0.000017 | Grad Norm: 78657.507812
+[2023-11-14 07:53:29,350::train::INFO] [Train] Iter 3160 | Loss 0.056969 (pos 0.551015 | v 0.000374 | cls 0.000001) | Lr: 0.000017 | Grad Norm: 62757.421875
+[2023-11-14 07:56:38,378::train::INFO] [Train] Iter 3180 | Loss 0.051332 (pos 0.485543 | v 0.000556 | cls 0.000000) | Lr: 0.000017 | Grad Norm: 66750.242188
+[2023-11-14 07:58:18,104::train::INFO] [Validate] Iter 03180 | Loss 0.129303 | Loss pos 0.062627 | Loss v 0.040476 e-3 | Loss cls 0.000002 | Avg atom auroc 0.969162
+[2023-11-14 07:58:18,106::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.129034 at iter 2760
+[2023-11-14 08:01:26,921::train::INFO] [Train] Iter 3200 | Loss 0.065806 (pos 0.632987 | v 0.000498 | cls 0.000309) | Lr: 0.000017 | Grad Norm: 74567.007812
+[2023-11-14 08:04:34,675::train::INFO] [Train] Iter 3220 | Loss 0.092083 (pos 0.895241 | v 0.000512 | cls 0.000001) | Lr: 0.000017 | Grad Norm: 67613.164062
+[2023-11-14 08:07:42,004::train::INFO] [Train] Iter 3240 | Loss 0.040289 (pos 0.377197 | v 0.000514 | cls 0.000004) | Lr: 0.000017 | Grad Norm: 68911.304688
+[2023-11-14 08:09:20,926::train::INFO] [Validate] Iter 03240 | Loss 0.130448 | Loss pos 0.063220 | Loss v 0.040073 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969386
+[2023-11-14 08:09:20,928::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.129034 at iter 2760
+[2023-11-14 08:12:28,986::train::INFO] [Train] Iter 3260 | Loss 0.052595 (pos 0.507873 | v 0.000361 | cls 0.000013) | Lr: 0.000013 | Grad Norm: 73887.085938
+[2023-11-14 08:15:38,452::train::INFO] [Train] Iter 3280 | Loss 0.112875 (pos 1.101502 | v 0.000545 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 67957.773438
+[2023-11-14 08:18:46,422::train::INFO] [Train] Iter 3300 | Loss 0.033387 (pos 0.312991 | v 0.000418 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 82660.859375
+[2023-11-14 08:20:26,181::train::INFO] [Validate] Iter 03300 | Loss 0.128912 | Loss pos 0.062461 | Loss v 0.039879 e-3 | Loss cls 0.000002 | Avg atom auroc 0.969512
+[2023-11-14 08:20:26,183::train::INFO] [Validate] Best val loss achieved: 0.128912
+[2023-11-14 08:23:34,196::train::INFO] [Train] Iter 3320 | Loss 0.057161 (pos 0.540719 | v 0.000618 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 76315.070312
+[2023-11-14 08:26:48,973::train::INFO] [Train] Iter 3340 | Loss 0.053414 (pos 0.499324 | v 0.000696 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 83138.320312
+[2023-11-14 08:30:00,907::train::INFO] [Train] Iter 3360 | Loss 0.071915 (pos 0.705746 | v 0.000268 | cls 0.000005) | Lr: 0.000013 | Grad Norm: 76642.984375
+[2023-11-14 08:31:41,292::train::INFO] [Validate] Iter 03360 | Loss 0.130076 | Loss pos 0.063053 | Loss v 0.039698 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969393
+[2023-11-14 08:31:41,294::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.128912 at iter 3300
+[2023-11-14 08:34:50,112::train::INFO] [Train] Iter 3380 | Loss 0.053489 (pos 0.497126 | v 0.000755 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 71720.593750
+[2023-11-14 08:37:58,463::train::INFO] [Train] Iter 3400 | Loss 0.067282 (pos 0.641690 | v 0.000623 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 77256.750000
+[2023-11-14 08:41:08,720::train::INFO] [Train] Iter 3420 | Loss 0.037769 (pos 0.339250 | v 0.000769 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 68269.195312
+[2023-11-14 08:42:52,650::train::INFO] [Validate] Iter 03420 | Loss 0.130431 | Loss pos 0.063204 | Loss v 0.040214 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969110
+[2023-11-14 08:42:52,652::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.128912 at iter 3300
+[2023-11-14 08:46:03,060::train::INFO] [Train] Iter 3440 | Loss 0.069776 (pos 0.677988 | v 0.000395 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 71840.226562
+[2023-11-14 08:49:11,105::train::INFO] [Train] Iter 3460 | Loss 0.058425 (pos 0.569860 | v 0.000288 | cls 0.000007) | Lr: 0.000013 | Grad Norm: 86324.929688
+[2023-11-14 08:52:18,441::train::INFO] [Train] Iter 3480 | Loss 0.061565 (pos 0.579349 | v 0.000725 | cls 0.000080) | Lr: 0.000013 | Grad Norm: 72213.132812
+[2023-11-14 08:53:56,907::train::INFO] [Validate] Iter 03480 | Loss 0.129797 | Loss pos 0.062888 | Loss v 0.040213 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969191
+[2023-11-14 08:53:56,909::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.128912 at iter 3300
+[2023-11-14 08:57:04,110::train::INFO] [Train] Iter 3500 | Loss 0.041514 (pos 0.398532 | v 0.000332 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 84253.179688
+[2023-11-14 09:00:12,434::train::INFO] [Train] Iter 3520 | Loss 0.064846 (pos 0.624544 | v 0.000478 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 72324.039062
+[2023-11-14 09:03:20,407::train::INFO] [Train] Iter 3540 | Loss 0.059188 (pos 0.567895 | v 0.000480 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 77116.367188
+[2023-11-14 09:04:59,910::train::INFO] [Validate] Iter 03540 | Loss 0.127787 | Loss pos 0.061909 | Loss v 0.039672 e-3 | Loss cls 0.000002 | Avg atom auroc 0.969537
+[2023-11-14 09:04:59,912::train::INFO] [Validate] Best val loss achieved: 0.127787
+[2023-11-14 09:08:06,787::train::INFO] [Train] Iter 3560 | Loss 0.040903 (pos 0.393064 | v 0.000319 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 81850.609375
+[2023-11-14 09:11:15,243::train::INFO] [Train] Iter 3580 | Loss 0.033964 (pos 0.328191 | v 0.000229 | cls 0.000001) | Lr: 0.000013 | Grad Norm: 74118.179688
+[2023-11-14 09:14:22,918::train::INFO] [Train] Iter 3600 | Loss 0.059855 (pos 0.580571 | v 0.000360 | cls 0.000002) | Lr: 0.000013 | Grad Norm: 88696.429688
+[2023-11-14 09:16:01,450::train::INFO] [Validate] Iter 03600 | Loss 0.130015 | Loss pos 0.063017 | Loss v 0.039784 e-3 | Loss cls 0.000002 | Avg atom auroc 0.968709
+[2023-11-14 09:16:01,452::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 09:19:09,273::train::INFO] [Train] Iter 3620 | Loss 0.047264 (pos 0.456159 | v 0.000330 | cls 0.000001) | Lr: 0.000013 | Grad Norm: 74217.742188
+[2023-11-14 09:22:19,055::train::INFO] [Train] Iter 3640 | Loss 0.066036 (pos 0.646940 | v 0.000268 | cls 0.000001) | Lr: 0.000013 | Grad Norm: 80298.976562
+[2023-11-14 09:25:29,769::train::INFO] [Train] Iter 3660 | Loss 0.040799 (pos 0.385665 | v 0.000446 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 67506.304688
+[2023-11-14 09:27:11,595::train::INFO] [Validate] Iter 03660 | Loss 0.128855 | Loss pos 0.062420 | Loss v 0.040126 e-3 | Loss cls 0.000003 | Avg atom auroc 0.969034
+[2023-11-14 09:27:11,597::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 09:30:19,036::train::INFO] [Train] Iter 3680 | Loss 0.054278 (pos 0.516888 | v 0.000518 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 77859.218750
+[2023-11-14 09:33:27,226::train::INFO] [Train] Iter 3700 | Loss 0.057986 (pos 0.552925 | v 0.000539 | cls 0.000001) | Lr: 0.000013 | Grad Norm: 69045.445312
+[2023-11-14 09:36:35,651::train::INFO] [Train] Iter 3720 | Loss 0.039846 (pos 0.381992 | v 0.000329 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 70339.367188
+[2023-11-14 09:38:14,557::train::INFO] [Validate] Iter 03720 | Loss 0.129342 | Loss pos 0.062704 | Loss v 0.039319 e-3 | Loss cls 0.000003 | Avg atom auroc 0.969182
+[2023-11-14 09:38:14,559::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 09:41:24,443::train::INFO] [Train] Iter 3740 | Loss 0.034435 (pos 0.330124 | v 0.000285 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 77336.265625
+[2023-11-14 09:44:35,789::train::INFO] [Train] Iter 3760 | Loss 0.061073 (pos 0.588630 | v 0.000442 | cls 0.000000) | Lr: 0.000013 | Grad Norm: 76313.609375
+[2023-11-14 09:47:44,818::train::INFO] [Train] Iter 3780 | Loss 0.027079 (pos 0.248449 | v 0.000447 | cls 0.000014) | Lr: 0.000013 | Grad Norm: 69846.554688
+[2023-11-14 09:49:24,003::train::INFO] [Validate] Iter 03780 | Loss 0.129260 | Loss pos 0.062655 | Loss v 0.039497 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969220
+[2023-11-14 09:49:24,005::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 09:52:32,436::train::INFO] [Train] Iter 3800 | Loss 0.036749 (pos 0.350103 | v 0.000348 | cls 0.000000) | Lr: 0.000011 | Grad Norm: 77230.210938
+[2023-11-14 09:55:43,134::train::INFO] [Train] Iter 3820 | Loss 0.031677 (pos 0.296954 | v 0.000396 | cls 0.000000) | Lr: 0.000011 | Grad Norm: 72902.390625
+[2023-11-14 09:58:54,691::train::INFO] [Train] Iter 3840 | Loss 0.063731 (pos 0.623355 | v 0.000279 | cls 0.000000) | Lr: 0.000011 | Grad Norm: 68746.976562
+[2023-11-14 10:00:34,579::train::INFO] [Validate] Iter 03840 | Loss 0.129437 | Loss pos 0.062728 | Loss v 0.039792 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969874
+[2023-11-14 10:00:34,581::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 10:03:42,729::train::INFO] [Train] Iter 3860 | Loss 0.045019 (pos 0.414110 | v 0.000722 | cls 0.000007) | Lr: 0.000011 | Grad Norm: 79506.945312
+[2023-11-14 10:06:50,190::train::INFO] [Train] Iter 3880 | Loss 0.073602 (pos 0.712230 | v 0.000476 | cls 0.000000) | Lr: 0.000011 | Grad Norm: 97860.789062
+[2023-11-14 10:09:57,778::train::INFO] [Train] Iter 3900 | Loss 0.036426 (pos 0.340479 | v 0.000476 | cls 0.000000) | Lr: 0.000011 | Grad Norm: 74883.132812
+[2023-11-14 10:11:36,584::train::INFO] [Validate] Iter 03900 | Loss 0.128710 | Loss pos 0.062387 | Loss v 0.039341 e-3 | Loss cls 0.000002 | Avg atom auroc 0.970202
+[2023-11-14 10:11:36,586::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 10:14:45,243::train::INFO] [Train] Iter 3920 | Loss 0.056940 (pos 0.554473 | v 0.000299 | cls 0.000004) | Lr: 0.000011 | Grad Norm: 78707.937500
+[2023-11-14 10:17:53,498::train::INFO] [Train] Iter 3940 | Loss 0.032258 (pos 0.300776 | v 0.000436 | cls 0.000000) | Lr: 0.000011 | Grad Norm: 65678.273438
+[2023-11-14 10:21:00,788::train::INFO] [Train] Iter 3960 | Loss 0.065041 (pos 0.626189 | v 0.000484 | cls 0.000000) | Lr: 0.000011 | Grad Norm: 80426.476562
+[2023-11-14 10:22:41,893::train::INFO] [Validate] Iter 03960 | Loss 0.128969 | Loss pos 0.062455 | Loss v 0.040576 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969502
+[2023-11-14 10:22:41,895::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 10:25:52,944::train::INFO] [Train] Iter 3980 | Loss 0.046862 (pos 0.456011 | v 0.000252 | cls 0.000000) | Lr: 0.000011 | Grad Norm: 86324.937500
+[2023-11-14 10:29:02,924::train::INFO] [Train] Iter 4000 | Loss 0.075334 (pos 0.731547 | v 0.000436 | cls 0.000000) | Lr: 0.000011 | Grad Norm: 82201.062500
+[2023-11-14 10:32:10,218::train::INFO] [Train] Iter 4020 | Loss 0.073772 (pos 0.725291 | v 0.000249 | cls 0.000001) | Lr: 0.000011 | Grad Norm: 158756.718750
+[2023-11-14 10:33:50,624::train::INFO] [Validate] Iter 04020 | Loss 0.129097 | Loss pos 0.062562 | Loss v 0.039729 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969160
+[2023-11-14 10:33:50,626::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 10:36:58,824::train::INFO] [Train] Iter 4040 | Loss 0.108446 (pos 1.052858 | v 0.000632 | cls 0.000003) | Lr: 0.000009 | Grad Norm: 170780.843750
+[2023-11-14 10:40:08,629::train::INFO] [Train] Iter 4060 | Loss 0.037578 (pos 0.360594 | v 0.000304 | cls 0.000000) | Lr: 0.000009 | Grad Norm: 167411.328125
+[2023-11-14 10:43:17,757::train::INFO] [Train] Iter 4080 | Loss 0.061556 (pos 0.593942 | v 0.000432 | cls 0.000000) | Lr: 0.000009 | Grad Norm: 153874.890625
+[2023-11-14 10:44:56,968::train::INFO] [Validate] Iter 04080 | Loss 0.129225 | Loss pos 0.062637 | Loss v 0.039498 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969074
+[2023-11-14 10:44:56,970::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 10:48:05,105::train::INFO] [Train] Iter 4100 | Loss 0.041708 (pos 0.394375 | v 0.000454 | cls 0.000000) | Lr: 0.000009 | Grad Norm: 174087.671875
+[2023-11-14 10:51:13,165::train::INFO] [Train] Iter 4120 | Loss 0.056074 (pos 0.544212 | v 0.000331 | cls 0.000000) | Lr: 0.000009 | Grad Norm: 146811.734375
+[2023-11-14 10:54:20,756::train::INFO] [Train] Iter 4140 | Loss 0.034727 (pos 0.330097 | v 0.000343 | cls 0.000000) | Lr: 0.000009 | Grad Norm: 153132.484375
+[2023-11-14 10:55:59,165::train::INFO] [Validate] Iter 04140 | Loss 0.127985 | Loss pos 0.062004 | Loss v 0.039768 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969047
+[2023-11-14 10:55:59,167::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 10:59:08,375::train::INFO] [Train] Iter 4160 | Loss 0.059600 (pos 0.562952 | v 0.000661 | cls 0.000002) | Lr: 0.000009 | Grad Norm: 165255.968750
+[2023-11-14 11:02:16,526::train::INFO] [Train] Iter 4180 | Loss 0.056511 (pos 0.539977 | v 0.000503 | cls 0.000000) | Lr: 0.000009 | Grad Norm: 136793.562500
+[2023-11-14 11:05:23,739::train::INFO] [Train] Iter 4200 | Loss 0.035597 (pos 0.344758 | v 0.000224 | cls 0.000000) | Lr: 0.000009 | Grad Norm: 152800.890625
+[2023-11-14 11:07:03,301::train::INFO] [Validate] Iter 04200 | Loss 0.128875 | Loss pos 0.062425 | Loss v 0.040248 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969477
+[2023-11-14 11:07:03,303::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 11:10:12,024::train::INFO] [Train] Iter 4220 | Loss 0.017864 (pos 0.167327 | v 0.000226 | cls 0.000000) | Lr: 0.000009 | Grad Norm: 139613.015625
+[2023-11-14 11:13:22,934::train::INFO] [Train] Iter 4240 | Loss 0.050042 (pos 0.466264 | v 0.000683 | cls 0.000001) | Lr: 0.000009 | Grad Norm: 226046.890625
+[2023-11-14 11:16:30,258::train::INFO] [Train] Iter 4260 | Loss 0.048059 (pos 0.457040 | v 0.000471 | cls 0.000000) | Lr: 0.000009 | Grad Norm: 146243.031250
+[2023-11-14 11:18:09,207::train::INFO] [Validate] Iter 04260 | Loss 0.129377 | Loss pos 0.062681 | Loss v 0.040139 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969323
+[2023-11-14 11:18:09,209::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 11:21:18,020::train::INFO] [Train] Iter 4280 | Loss 0.041053 (pos 0.390893 | v 0.000393 | cls 0.000000) | Lr: 0.000007 | Grad Norm: 133019.812500
+[2023-11-14 11:24:29,316::train::INFO] [Train] Iter 4300 | Loss 0.070995 (pos 0.679691 | v 0.000605 | cls 0.000000) | Lr: 0.000007 | Grad Norm: 166522.796875
+[2023-11-14 11:27:39,804::train::INFO] [Train] Iter 4320 | Loss 0.034175 (pos 0.309049 | v 0.000654 | cls 0.000000) | Lr: 0.000007 | Grad Norm: 155136.828125
+[2023-11-14 11:29:18,610::train::INFO] [Validate] Iter 04320 | Loss 0.128653 | Loss pos 0.062333 | Loss v 0.039858 e-3 | Loss cls 0.000002 | Avg atom auroc 0.969799
+[2023-11-14 11:29:18,612::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 11:32:27,090::train::INFO] [Train] Iter 4340 | Loss 0.049414 (pos 0.463471 | v 0.000613 | cls 0.000003) | Lr: 0.000007 | Grad Norm: 159929.546875
+[2023-11-14 11:35:35,769::train::INFO] [Train] Iter 4360 | Loss 0.055708 (pos 0.524864 | v 0.000644 | cls 0.000000) | Lr: 0.000007 | Grad Norm: 130542.187500
+[2023-11-14 11:38:43,716::train::INFO] [Train] Iter 4380 | Loss 0.049477 (pos 0.474831 | v 0.000399 | cls 0.000003) | Lr: 0.000007 | Grad Norm: 149089.843750
+[2023-11-14 11:40:22,064::train::INFO] [Validate] Iter 04380 | Loss 0.127792 | Loss pos 0.061941 | Loss v 0.039096 e-3 | Loss cls 0.000001 | Avg atom auroc 0.970103
+[2023-11-14 11:40:22,066::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 11:43:30,855::train::INFO] [Train] Iter 4400 | Loss 0.058590 (pos 0.568038 | v 0.000357 | cls 0.000004) | Lr: 0.000007 | Grad Norm: 144051.609375
+[2023-11-14 11:46:39,867::train::INFO] [Train] Iter 4420 | Loss 0.049726 (pos 0.480480 | v 0.000336 | cls 0.000000) | Lr: 0.000007 | Grad Norm: 170956.281250
+[2023-11-14 11:49:46,862::train::INFO] [Train] Iter 4440 | Loss 0.045833 (pos 0.439533 | v 0.000376 | cls 0.000000) | Lr: 0.000007 | Grad Norm: 147231.734375
+[2023-11-14 11:51:26,246::train::INFO] [Validate] Iter 04440 | Loss 0.128487 | Loss pos 0.062272 | Loss v 0.039426 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969997
+[2023-11-14 11:51:26,248::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 11:54:34,608::train::INFO] [Train] Iter 4460 | Loss 0.064180 (pos 0.619606 | v 0.000444 | cls 0.000002) | Lr: 0.000007 | Grad Norm: 142260.718750
+[2023-11-14 11:57:43,130::train::INFO] [Train] Iter 4480 | Loss 0.042280 (pos 0.400505 | v 0.000446 | cls 0.000000) | Lr: 0.000007 | Grad Norm: 155589.156250
+[2023-11-14 12:00:51,315::train::INFO] [Train] Iter 4500 | Loss 0.031084 (pos 0.289485 | v 0.000427 | cls 0.000000) | Lr: 0.000007 | Grad Norm: 126837.414062
+[2023-11-14 12:02:29,931::train::INFO] [Validate] Iter 04500 | Loss 0.129216 | Loss pos 0.062380 | Loss v 0.044546 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969825
+[2023-11-14 12:02:29,934::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 12:05:40,338::train::INFO] [Train] Iter 4520 | Loss 0.074566 (pos 0.729397 | v 0.000325 | cls 0.000000) | Lr: 0.000005 | Grad Norm: 113100.914062
+[2023-11-14 12:08:48,916::train::INFO] [Train] Iter 4540 | Loss 0.055478 (pos 0.530393 | v 0.000488 | cls 0.000000) | Lr: 0.000005 | Grad Norm: 146310.359375
+[2023-11-14 12:12:00,869::train::INFO] [Train] Iter 4560 | Loss 0.052871 (pos 0.505901 | v 0.000456 | cls 0.000003) | Lr: 0.000005 | Grad Norm: 153140.390625
+[2023-11-14 12:13:39,114::train::INFO] [Validate] Iter 04560 | Loss 0.128203 | Loss pos 0.062140 | Loss v 0.039227 e-3 | Loss cls 0.000001 | Avg atom auroc 0.969783
+[2023-11-14 12:13:39,116::train::INFO] [Validate] Val loss is not improved. Best val loss: 0.127787 at iter 3540
+[2023-11-14 12:16:49,207::train::INFO] [Train] Iter 4580 | Loss 0.057873 (pos 0.561418 | v 0.000346 | cls 0.000000) | Lr: 0.000005 | Grad Norm: 125121.265625
+[2023-11-14 12:19:57,913::train::INFO] [Train] Iter 4600 | Loss 0.062611 (pos 0.605975 | v 0.000400 | cls 0.000306) | Lr: 0.000005 | Grad Norm: 174138.328125
+[2023-11-14 12:23:05,216::train::INFO] [Train] Iter 4620 | Loss 0.053642 (pos 0.503759 | v 0.000653 | cls 0.000000) | Lr: 0.000005 | Grad Norm: 157203.968750
