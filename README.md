@@ -2,7 +2,12 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/guanjq/targetdiff/blob/main/LICIENCE)
 
+## Results
+1. Sampling molecules _sdf_ files from 3D sbdd, graphbp, pocket2mol, targetdiff and our interdiff can be obtained from [here](https://zenodo.org/records/10205723).
+2. The project code has also been deployed to [Google Drive](https://drive.google.com/drive/folders/1P1sedbWrQ_xQcYR9X0V0zxbZYNgAAzM_) and Google Collab, and you can directly run the test code through the [interdiff.ipynb](https://drive.google.com/file/d/1ia_CouDu4dDOTw6--wirviF1XkoH4arj/view?usp=drive_link) file.
 
+## Pretrained Weight
+You can get pretrained model weight [here](https://drive.google.com/file/d/10zBqQ4YBfh7bbcHNrhZk20INXmr-bSg9/view?usp=drive_link). And you should put the _*.pt_ in [pretrained/checkpoints](pretrained/checkpoints).
 
 ## Python Environment Install
 Please use [_Mamba_](https://mamba.readthedocs.io/en/latest/micromamba-installation.html) to manage the environment.
@@ -52,16 +57,26 @@ If you want to process the dataset from scratch, you need to download CrossDocke
 After processing the data, you will obtain a `pocket_with_prompt.lmdb` database, which contains the data required for training, and the `train/test` split file `prompt_split.pt`.
 
 ## Training
-```python
-python -m scripts.train_diffusion configs/training.yml
+```bash
+python train_diffusion.py # Only 100 data are trained here for illustration.
 ```
+## Evaluating
+### Generate data for a given test_set.
+Here we sample ligands in the test set. Processed test set are in the path 'data/test_data.pt'. we generat one ligand for each target. In 'sample.py' script, we can sample multiple targets at the same time. The batchsize is 10 and we sample ten different targets, generating one ligand for each target.
+```bash
+python sampling.py
+```
+### Reconstruct molecules from generated data and detect the interactions from sampled poses.
+we have finishing sampling the protein targets, the samples are saved in folder 'outputs_system' with name 'equa_last.pt', which saves the coordinates and atom types of ligand. Now we reconstruct the molecules from 'equa_last.pt' file and detect the interactions, the illustration results are saved in 'outputs_system/equa_aromatic.csv'
+```bash
+python sampling.py --evaluation True
+```
+
 ## Sampling
 Sampling for arbitrary pocket, the input format should be in PDB (Protein Data Bank) format, and the pockets need to be pre-extracted by yourself.
-```python
+```bash
 python -m scripts.sample_for_pocket configs/sampling.yml --pdb_path examples.pdb
 ```
 
-## Results
-1. Sampling molecules _sdf_ files from 3D sbdd, graphbp, pocket2mol, targetdiff and our interdiff can be obtained from [here](https://zenodo.org/records/10205723)),
-2. The project code has also been deployed to [Google Drive](https://drive.google.com/drive/folders/1P1sedbWrQ_xQcYR9X0V0zxbZYNgAAzM_) and Google Collab, and you can directly run the test code through the [interdiff.ipynb](https://drive.google.com/file/d/1ia_CouDu4dDOTw6--wirviF1XkoH4arj/view?usp=drive_link) file.
+
 
