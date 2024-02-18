@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/guanjq/targetdiff/blob/main/LICIENCE)
 
 ## Results
-1. Sampling molecules _sdf_ files from 3D-SBDD, GaphBP, Pocket2Mol, TargetDiff and our InterDiff are released in _Zenodo_, you can get the data [here](https://zenodo.org/records/10205723).
+1. Sampled molecules _sdf_ files from 3D-SBDD, GaphBP, Pocket2Mol, TargetDiff and our InterDiff are released in _Zenodo_, you can get the data [here](https://zenodo.org/records/10205723).
 
 2. The project code has also been deployed to [*Google Drive*](https://drive.google.com/drive/folders/1P1sedbWrQ_xQcYR9X0V0zxbZYNgAAzM_) and *Google Collab*, and you can directly run the test code through the [interdiff.ipynb](https://drive.google.com/file/d/1ia_CouDu4dDOTw6--wirviF1XkoH4arj/view?usp=drive_link) file.
 
