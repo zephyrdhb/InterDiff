@@ -69,16 +69,39 @@ def get_refine_net(config):
         x2h_out_fc=config.x2h_out_fc,
         sync_twoup=config.sync_twoup)
     return refine_net
+
+def advance_schedule(timesteps, scale_start=0.9999, scale_end=0.0001, width=3, return_alphas_bar=False):
+    k = width
+    A0 = scale_end
+    A1 = scale_start
+
+    a = (A0-A1)/(sigmoid(-k) - sigmoid(k))
+    b = 0.5 * (A0 + A1 - a)
+
+    x = np.linspace(-1, 1, timesteps)
+    y = a * sigmoid(- k * x) + b
+    # print(y)
+    
+    alphas_cumprod = y 
+    alphas = np.zeros_like(alphas_cumprod)
+    alphas[0] = alphas_cumprod[0]
+    alphas[1:] = alphas_cumprod[1:] / alphas_cumprod[:-1]
+    betas = 1 - alphas
+    betas = np.clip(betas, 0, 1)
+    if not return_alphas_bar:
+        return betas
+    else:
+        return betas, alphas_cumprod
 def cosine_beta_schedule_discrete(timesteps, nu_arr, s=0.008):
     """ Cosine schedule as proposed in https://openreview.net/forum?id=-NEXDKk8gZ. """
-    steps = timesteps + 2
+    steps = timesteps + 1
     x = np.linspace(0, steps, steps)
     x = np.expand_dims(x, 0)  # ((1, steps))
 
     nu_arr = np.array(nu_arr)  # (components, )  # X, charges, E, y, pos
     # nu_arr = np.expand_dims(nu_arr, 1)  # ((components, 1))
 
-    alphas_cumprod = np.cos(0.5 * np.pi * (((x / steps) ** nu_arr) + s) / (1 + s)) ** 2  # ((components, steps))
+    alphas_cumprod = np.cos(0.5 * np.pi * (((x / steps)  + s)** nu_arr / (1 + s))) ** 2  # ((components, steps))
     # divide every element of alphas_cumprod by the first element of alphas_cumprod
     alphas_cumprod_new = alphas_cumprod / np.expand_dims(alphas_cumprod[:, 0], 1)
     # remove the first element of alphas_cumprod and then multiply every element by the one before it
@@ -88,6 +111,11 @@ def cosine_beta_schedule_discrete(timesteps, nu_arr, s=0.008):
     betas = np.swapaxes(betas, 0, 1)
 
     return betas
+def time_dependent_weight(timestep, alphas):
+
+    weights = torch.tensor([1.5  if i<=230 else alphas[idx]/(1-alphas[idx]) for idx,i in enumerate(timestep)])
+    weights = torch.clamp(weights,min=0.5,max=1.5)
+    return weights
 def get_beta_schedule(beta_schedule, *, beta_start, beta_end, num_diffusion_timesteps):
 
     if beta_schedule == "quad":
@@ -121,7 +149,7 @@ def get_beta_schedule(beta_schedule, *, beta_start, beta_end, num_diffusion_time
     assert betas.shape == (num_diffusion_timesteps,)
     return betas
 
-def cosine_beta_schedule(timesteps, s=0.008):
+def cosine_beta_schedule(timesteps, s=0.01):
     """
     cosine schedule
     as proposed in https://openreview.net/forum?id=-NEXDKk8gZ
@@ -147,7 +175,7 @@ def to_torch_const(x):
     x = nn.Parameter(x, requires_grad=False)
     return x
 
-def center_pos(protein_pos, ligand_pos, batch_protein, batch_ligand, mode='joint'):
+def center_pos(protein_pos, ligand_pos, batch_protein, batch_ligand, mode='protein'):
     if mode == 'none':
         offset = 0.
         pass
@@ -237,9 +265,9 @@ class ScorePosNet3D(nn.Module):
         self.model_mean_type = config.model_mean_type  # ['noise', 'C0']
         self.loss_v_weight = config.loss_v_weight
         self.drop_prob = 0.15
-
+        self.time_dependent_loss = config.time_dependent_loss
         self.sample_time_method = config.sample_time_method  # ['importance', 'symmetric']
- 
+
         layer = nn.Linear(128*2, 45, bias=False)
         torch.nn.init.xavier_uniform_(layer.weight, gain=0.001)
         emb_dim = 128
@@ -253,9 +281,9 @@ class ScorePosNet3D(nn.Module):
 
         self.cls_loss = nn.CrossEntropyLoss()
         if config.beta_schedule == 'advance':
-            alphas = cosine_beta_schedule_discrete(config.num_diffusion_timesteps,2.5)
+            betas = advance_schedule(config.num_diffusion_timesteps)
             # print('cosine pos alpha schedule applied!')
-            betas = 1. - alphas
+
         else:
             betas = get_beta_schedule(
                 beta_schedule=config.beta_schedule,
@@ -265,19 +293,15 @@ class ScorePosNet3D(nn.Module):
             )
             alphas = 1. - betas
 
-        alphas_cumprod = np.cumprod(alphas, axis=0)
+        alphas = 1 - np.clip(betas, a_min=0, a_max=0.9999)
+        log_alpha = np.log(alphas)
+        alphas_cumprod = np.exp(np.cumsum(log_alpha, axis=0)).squeeze()
         alphas_cumprod_prev = np.append(1., alphas_cumprod[:-1])
 
         self.betas = to_torch_const(betas)
         self.num_timesteps = self.betas.size(0)
         self.alphas_cumprod = to_torch_const(alphas_cumprod)
         self.alphas_cumprod_prev = to_torch_const(alphas_cumprod_prev)
-
-        # calculations for diffusion q(x_t | x_{t-1}) and others
-        self.sqrt_alphas_cumprod = to_torch_const(np.sqrt(alphas_cumprod))
-        self.sqrt_one_minus_alphas_cumprod = to_torch_const(np.sqrt(1. - alphas_cumprod))
-        self.sqrt_recip_alphas_cumprod = to_torch_const(np.sqrt(1. / alphas_cumprod))
-        self.sqrt_recipm1_alphas_cumprod = to_torch_const(np.sqrt(1. / alphas_cumprod - 1))
 
         # calculations for posterior q(x_{t-1} | x_t, x_0)
         posterior_variance = betas * (1. - alphas_cumprod_prev) / (1. - alphas_cumprod)
@@ -290,11 +314,11 @@ class ScorePosNet3D(nn.Module):
 
         # atom type diffusion schedule in log space
         if config.v_beta_schedule == 'cosine':
-            alphas_v = cosine_beta_schedule_discrete(self.num_timesteps, 1)
+            alphas_v = cosine_beta_schedule(self.num_timesteps, config.v_beta_s)
             # print('cosine v alpha schedule applied!')
         else:
             raise NotImplementedError
-        log_alphas_v = np.log(alphas_v)
+        log_alphas_v = np.log(alphas_v).squeeze()
         log_alphas_cumprod_v = np.cumsum(log_alphas_v)
         self.log_alphas_v = to_torch_const(log_alphas_v)
         self.log_one_minus_alphas_v = to_torch_const(log_1_min_a(log_alphas_v))
@@ -455,11 +479,6 @@ class ScorePosNet3D(nn.Module):
         kl_prior = scatter_mean(kl_prior, batch, dim=0)
         return kl_prior
 
-    def _predict_x0_from_eps(self, xt, eps, t, batch):
-        pos0_from_e = extract(self.sqrt_recip_alphas_cumprod, t, batch) * xt - \
-                      extract(self.sqrt_recipm1_alphas_cumprod, t, batch) * eps
-        return pos0_from_e
-
     def q_pos_posterior(self, x0, xt, t, batch):
         # Compute the mean and variance of the diffusion posterior q(x_{t-1} | x_t, x_0)
         pos_model_mean = extract(self.posterior_mean_c0_coef, t, batch) * x0 + \
@@ -546,7 +565,7 @@ class ScorePosNet3D(nn.Module):
             pt = torch.ones_like(time_step).float() / self.num_timesteps
 
         a = self.alphas_cumprod.to(time_step.device).index_select(0, time_step)  # (num_graphs, )
-
+        weight_loss = time_dependent_weight(time_step,a).to(a.device)
         # 2. perturb pos and v
         a_pos = a[batch_ligand].unsqueeze(-1)  # (num_ligand_atoms, 1)
         pos_noise = torch.zeros_like(ligand_pos)
@@ -580,17 +599,6 @@ class ScorePosNet3D(nn.Module):
         cls_loss = self.cls_loss(inter_preds,res_idx.long())
         pred_ligand_pos, pred_ligand_v = preds['pred_ligand_pos'], preds['pred_ligand_v']
         pred_pos_noise = pred_ligand_pos - ligand_pos_perturbed
-        # atom position
-        if self.model_mean_type == 'noise':
-            pos0_from_e = self._predict_x0_from_eps(
-                xt=ligand_pos_perturbed, eps=pred_pos_noise, t=time_step, batch=batch_ligand)
-            pos_model_mean = self.q_pos_posterior(
-                x0=pos0_from_e, xt=ligand_pos_perturbed, t=time_step, batch=batch_ligand)
-        elif self.model_mean_type == 'C0':
-            pos_model_mean = self.q_pos_posterior(
-                x0=pred_ligand_pos, xt=ligand_pos_perturbed, t=time_step, batch=batch_ligand)
-        else:
-            raise ValueError
 
         # atom pos loss
         if self.model_mean_type == 'C0':
@@ -600,16 +608,21 @@ class ScorePosNet3D(nn.Module):
         else:
             raise ValueError
         loss_pos = scatter_mean(((pred - target) ** 2).sum(-1), batch_ligand, dim=0)
-        loss_pos = torch.mean(loss_pos)
-
+        if self.time_dependent_loss:
+            loss_pos = torch.mean(weight_loss * loss_pos)
+        else:
+            loss_pos = torch.mean(loss_pos)
         # atom type loss
         log_ligand_v_recon = F.log_softmax(pred_ligand_v, dim=-1)
         log_v_model_prob = self.q_v_posterior(log_ligand_v_recon, log_ligand_vt, time_step, batch_ligand)
         log_v_true_prob = self.q_v_posterior(log_ligand_v0, log_ligand_vt, time_step, batch_ligand)
         kl_v = self.compute_v_Lt(log_v_model_prob=log_v_model_prob, log_v0=log_ligand_v0,
                                  log_v_true_prob=log_v_true_prob, t=time_step, batch=batch_ligand)
-        loss_v = torch.mean(kl_v)
-        loss = 5*loss_pos + loss_v * self.loss_v_weight + cls_loss
+        if self.time_dependent_loss:
+            loss_v = torch.mean(weight_loss * kl_v)
+        else:
+            loss_v = torch.mean(kl_v)
+        loss = 2*loss_pos + loss_v * self.loss_v_weight + cls_loss
 
         return {
             'loss_pos': loss_pos,
@@ -628,7 +641,7 @@ class ScorePosNet3D(nn.Module):
             self, protein_pos, protein_v, batch_protein, ligand_pos, ligand_v, batch_ligand, time_step
     ):
         protein_pos, ligand_pos, _ = center_pos(
-            protein_pos, ligand_pos, batch_protein, batch_ligand, mode='protein')
+            protein_pos, ligand_pos, batch_protein, batch_ligand, mode=self.center_pos_mode)
         assert (time_step == self.num_timesteps).all() or (time_step < self.num_timesteps).all()
         if (time_step == self.num_timesteps).all():
             kl_pos_prior = self.kl_pos_prior(ligand_pos, batch_ligand)
@@ -715,7 +728,7 @@ class ScorePosNet3D(nn.Module):
 
         # time sequence
         time_seq = list(reversed(range(self.num_timesteps - num_steps, self.num_timesteps)))
-        for i in tqdm(time_seq, desc='sampling', total=len(time_seq)):
+        for i in tqdm(time_seq, desc='sampling', total=len(time_seq),position=0):
             t = torch.full(size=(num_graphs,), fill_value=i, dtype=torch.long, device=protein_pos.device)
 
             preds = self(

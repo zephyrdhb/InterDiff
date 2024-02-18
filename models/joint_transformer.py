@@ -1,5 +1,5 @@
 import numpy as np
-import torch,time
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch_scatter import scatter_softmax, scatter_sum
@@ -201,7 +201,7 @@ class AttentionLayerO2TwoUpdateNodeGeneral(nn.Module):
                                 ew_net_type=self.ew_net_type)
             )
 
-    def forward(self, h, x, edge_attr, edge_index, mask_ligand,protein_len,ligand_len,dist_feat,interaction=None,e_w=None, fix_x=False,return_attention=False):
+    def forward(self, h, x, edge_attr, edge_index, mask_ligand,dist_feat,interaction=None,e_w=None, fix_x=False):
         src, dst = edge_index[0],edge_index[1]#num_edges,num_edges
         # pro_pos_emb = self.pro_pos_embed(x[~mask_ligand])
         # lig_pos_emb = self.lig_pos_embed(x[mask_ligand])
@@ -223,14 +223,14 @@ class AttentionLayerO2TwoUpdateNodeGeneral(nn.Module):
         for i in range(self.num_h2x):#1
             delta_x = self.h2x_layers[i](new_h, rel_x, dist_feat, edge_attr, edge_index, e_w=e_w)
             if not fix_x:#执行
-                x = x + delta_x * mask_ligand[:, None]  # only ligand positions will be updated
+                x = x + delta_x
             rel_x = x[dst] - x[src]#num_edges*3
 
         return x2h_out, x
 
 class PromptTransformer(nn.Module):
     def __init__(self, num_blocks, num_layers, hidden_dim, n_heads=1, k=32,
-                 num_r_gaussian=15, edge_feat_dim=0, num_node_types=8, act_fn='mish', norm=True,
+                 num_r_gaussian=50, edge_feat_dim=0, num_node_types=8, act_fn='mish', norm=True,
                  cutoff_mode='radius', ew_net_type='r',
                  num_init_x2h=1, num_init_h2x=0, num_x2h=1, num_h2x=1, r_max=10., x2h_out_fc=True, sync_twoup=False):
         super().__init__()
@@ -248,7 +248,7 @@ class PromptTransformer(nn.Module):
         self.cutoff_mode = cutoff_mode  # [radius, none]
         self.k = k
         self.ew_net_type = ew_net_type  # [r, m, none]
-        self.edge_cutoff = 5
+        self.edge_cutoff = 7
         self.num_x2h = num_x2h
         self.num_h2x = num_h2x
         self.num_init_x2h = num_init_x2h
@@ -282,7 +282,7 @@ class PromptTransformer(nn.Module):
             base_block.append(layer)
         return nn.ModuleList(base_block)
     def get_edges(self, x, batch_mask):
-        
+
         adj = batch_mask[:, None] == batch_mask[None, :]
         dist_mat = torch.cdist(x, x)
         if self.edge_cutoff is not None:
@@ -291,20 +291,7 @@ class PromptTransformer(nn.Module):
         radial = dist_mat[edges[0],edges[1]].unsqueeze(1)
 
         return edges, radial
-    """
-    def get_edges_seq(self, x, batch_mask):
-        edges = []
-        radial = []
-        pre_len = 0
-        for i in range(10):
-            mask = batch_mask == i
-            dist_mat = torch.cdist(x[mask],x[mask])
-            edge = torch.where(dist_mat <= self.edge_cutoff)
-            radial.append(dist_mat[edge[0],edge[1]].unsqueeze(1))
-            edges.append(torch.stack((edge[0]+ pre_len,edge[1]+pre_len),dim=0))
-            pre_len = pre_len + dist_mat.shape[0]
-        return torch.hstack(edges), torch.vstack(radial)
-    """
+
     def build_edge_type(self,edge_index, mask_ligand):
         src, dst = edge_index
         edge_type = torch.zeros(len(src)).to(edge_index)
@@ -325,10 +312,8 @@ class PromptTransformer(nn.Module):
         atts = []
         for b_idx in range(self.num_blocks):
             edge_index, edge_distance = self.get_edges(x, batch)
-
             edge_type = self.build_edge_type(edge_index,mask_ligand)
             dist_feat = self.distance_expansion(edge_distance,edge_type)
-
             if self.ew_net_type == 'global':
                 # dist = torch.norm(x[dst] - x[src], p=2, dim=-1, keepdim=True)
                 

@@ -4,91 +4,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch_scatter import scatter_sum, scatter_mean
 from tqdm.auto import tqdm
-import math
-from models.common import compose_context, ShiftedSoftplus
-from models.egnn import EGNN
-from models.uni_transformer import UniTransformerO2TwoUpdateGeneral
-from models.prompt_transformer import PromptTransformer
-from einops import repeat
-PROMPT_4 = [0,2,3,2,3,2,3,
-            2,3,2,3,2,3,
-            2,3,2,3,2,3,
-            2,3,2,3,2,3,
-            2,3,2,3,2,3,
-            2,3,2,3,2,3,
-            1,2,3,4,1,2,3,4]
-INDICATOR = [[0,0,0,0,1],[1,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[0,1,0,0,0],
-             [1,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[0,1,0,0,0],
-             [1,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[0,1,0,0,0],
-             [1,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[0,1,0,0,0],
-             [1,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[0,1,0,0,0],
-             [1,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[0,1,0,0,0],
-             [0,0,1,0,0],[1,0,0,0,0],[0,1,0,0,0],[0,0,0,1,0],[0,0,1,0,0],[1,0,0,0,0],[0,1,0,0,0],[0,0,0,1,0]]
-INDICATOR2= [[0,0,0,0],[1,0,0,0],[0,1,0,0],[1,0,0,0],[0,1,0,0],[1,0,0,0],[0,1,0,0],
-             [1,0,0,0],[0,1,0,0],[1,0,0,0],[0,1,0,0],[1,0,0,0],[0,1,0,0],
-             [1,0,0,0],[0,1,0,0],[1,0,0,0],[0,1,0,0],[1,0,0,0],[0,1,0,0],
-             [1,0,0,0],[0,1,0,0],[1,0,0,0],[0,1,0,0],[1,0,0,0],[0,1,0,0],
-             [1,0,0,0],[0,1,0,0],[1,0,0,0],[0,1,0,0],[1,0,0,0],[0,1,0,0],
-             [1,0,0,0],[0,1,0,0],[1,0,0,0],[0,1,0,0],[1,0,0,0],[0,1,0,0],
-             [0,0,1,0],[1,0,0,0],[0,1,0,0],[0,0,0,1],[0,0,1,0],[1,0,0,0],[0,1,0,0],[0,0,0,1]]
-INTER_L = [0,1,2,1,2,1,2,
-           1,2,1,2,1,2,
-           1,2,1,2,1,2,
-           1,2,1,2,1,2,
-           1,2,1,2,1,2,
-           1,2,1,2,1,2,
-           3,1,2,4,3,1,2,4]
+import copy
+from models.common import compose_context, ShiftedSoftplus, frag_context
+from models.prompt_frags import PromptFrags
 
-INTER_L2 = [0,1,2,3,4,5,6,
-           7,8,9,10,11,12,
-           13,14,15,16,17,18,
-           19,20,21,22,23,24,
-           25,26,27,28,29,30,
-           31,32,33,34,35,36,
-           37,38,39,40,41,42,43,44]
-def sigmoid(x):
-    return 1 / (np.exp(-x) + 1)
-def get_refine_net(config):
-
-    refine_net = PromptTransformer(
-        num_blocks=config.num_blocks,
-        num_layers=config.num_layers,
-        hidden_dim=config.hidden_dim,
-        n_heads=config.n_heads,
-        k=config.knn,
-        edge_feat_dim=config.edge_feat_dim,
-        num_r_gaussian=config.num_r_gaussian,
-        num_node_types=config.num_node_types,
-        act_fn=config.act_fn,
-        norm=config.norm,
-        cutoff_mode=config.cutoff_mode,
-        ew_net_type=config.ew_net_type,
-        num_x2h=config.num_x2h,
-        num_h2x=config.num_h2x,
-        r_max=config.r_max,
-        x2h_out_fc=config.x2h_out_fc,
-        sync_twoup=config.sync_twoup)
-    return refine_net
-def cosine_beta_schedule_discrete(timesteps, nu_arr, s=0.008):
-    """ Cosine schedule as proposed in https://openreview.net/forum?id=-NEXDKk8gZ. """
-    steps = timesteps + 2
-    x = np.linspace(0, steps, steps)
-    x = np.expand_dims(x, 0)  # ((1, steps))
-
-    nu_arr = np.array(nu_arr)  # (components, )  # X, charges, E, y, pos
-    # nu_arr = np.expand_dims(nu_arr, 1)  # ((components, 1))
-
-    alphas_cumprod = np.cos(0.5 * np.pi * (((x / steps) ** nu_arr) + s) / (1 + s)) ** 2  # ((components, steps))
-    # divide every element of alphas_cumprod by the first element of alphas_cumprod
-    alphas_cumprod_new = alphas_cumprod / np.expand_dims(alphas_cumprod[:, 0], 1)
-    # remove the first element of alphas_cumprod and then multiply every element by the one before it
-    alphas = (alphas_cumprod_new[:, 1:] / alphas_cumprod_new[:, :-1])
-
-    betas = 1 - alphas  # ((components, steps)) # X, charges, E, y, pos
-    betas = np.swapaxes(betas, 0, 1)
-
-    return betas
 def get_beta_schedule(beta_schedule, *, beta_start, beta_end, num_diffusion_timesteps):
+    def sigmoid(x):
+        return 1 / (np.exp(-x) + 1)
 
     if beta_schedule == "quad":
         betas = (
@@ -100,15 +22,12 @@ def get_beta_schedule(beta_schedule, *, beta_start, beta_end, num_diffusion_time
                 )
                 ** 2
         )
-
     elif beta_schedule == "linear":
         betas = np.linspace(
             beta_start, beta_end, num_diffusion_timesteps, dtype=np.float64
         )
-
     elif beta_schedule == "const":
         betas = beta_end * np.ones(num_diffusion_timesteps, dtype=np.float64)
-
     elif beta_schedule == "jsd":  # 1/T, 1/(T-1), 1/(T-2), ..., 1
         betas = 1.0 / np.linspace(
             num_diffusion_timesteps, 1, num_diffusion_timesteps, dtype=np.float64
@@ -120,6 +39,7 @@ def get_beta_schedule(beta_schedule, *, beta_start, beta_end, num_diffusion_time
         raise NotImplementedError(beta_schedule)
     assert betas.shape == (num_diffusion_timesteps,)
     return betas
+
 
 def cosine_beta_schedule(timesteps, s=0.008):
     """
@@ -139,28 +59,26 @@ def cosine_beta_schedule(timesteps, s=0.008):
     alphas = np.sqrt(alphas)
     return alphas
 
+
 def get_distance(pos, edge_index):
     return (pos[edge_index[0]] - pos[edge_index[1]]).norm(dim=-1)
+
 
 def to_torch_const(x):
     x = torch.from_numpy(x).float()
     x = nn.Parameter(x, requires_grad=False)
     return x
 
-def center_pos(protein_pos, ligand_pos, batch_protein, batch_ligand, mode='joint'):
-    if mode == 'none':
-        offset = 0.
-        pass
-    elif mode == 'protein':
-        offset = scatter_mean(protein_pos, batch_protein, dim=0)
-        protein_pos = protein_pos - offset[batch_protein]
-        ligand_pos = ligand_pos - offset[batch_ligand]
-    else:
-        offset = scatter_mean(torch.cat((protein_pos,ligand_pos),dim=0), torch.cat((batch_protein,batch_ligand),dim=0), dim=0)
-        protein_pos = protein_pos - offset[batch_protein]
-        ligand_pos = ligand_pos - offset[batch_ligand]
-    return protein_pos, ligand_pos, offset
 
+def center_pos(protein_pos, ligand_pos, batch_protein, batch_ligand, mask):
+    #为确保平移不变性,重心采用anchor的重心
+    offset = scatter_mean(ligand_pos[mask], batch_ligand[mask], dim=0)
+    protein_pos = protein_pos - offset[batch_protein]
+    ligand_pos = ligand_pos - offset[batch_ligand]
+
+    return protein_pos, ligand_pos
+
+# %% categorical diffusion related
 def index_to_log_onehot(x, num_classes):
     assert x.max().item() < num_classes, f'Error: {x.max().item()} >= {num_classes}'
     x_onehot = F.one_hot(x, num_classes)
@@ -172,12 +90,15 @@ def index_to_log_onehot(x, num_classes):
 def log_onehot_to_index(log_x):
     return log_x.argmax(1)
 
+
 def categorical_kl(log_prob1, log_prob2):
     kl = (log_prob1.exp() * (log_prob1 - log_prob2)).sum(dim=1)
     return kl
 
+
 def log_categorical(log_x_start, log_prob):
     return (log_x_start.exp() * log_prob).sum(dim=1)
+
 
 def normal_kl(mean1, logvar1, mean2, logvar2):
     """
@@ -186,25 +107,30 @@ def normal_kl(mean1, logvar1, mean2, logvar2):
     kl = 0.5 * (-1.0 + logvar2 - logvar1 + torch.exp(logvar1 - logvar2) + (mean1 - mean2) ** 2 * torch.exp(-logvar2))
     return kl.sum(-1)
 
+
 def log_normal(values, means, log_scales):
     var = torch.exp(log_scales * 2)
     log_prob = -((values - means) ** 2) / (2 * var) - log_scales - np.log(np.sqrt(2 * np.pi))
     return log_prob.sum(-1)
 
+
 def log_sample_categorical(logits):
-    uniform = torch.rand_like(logits)
+    uniform = torch.rand_like(logits)#randn是正态,这里是均匀分布
     gumbel_noise = -torch.log(-torch.log(uniform + 1e-30) + 1e-30)
     sample_index = (gumbel_noise + logits).argmax(dim=-1)
     # sample_onehot = F.one_hot(sample, self.num_classes)
     # log_sample = index_to_log_onehot(sample, self.num_classes)
     return sample_index
 
+
 def log_1_min_a(a):
     return np.log(1 - np.exp(a) + 1e-40)
 
+
 def log_add_exp(a, b):
-    maximum = torch.max(a, b)
+    maximum = torch.max(a, b)#(N,13)
     return maximum + torch.log(torch.exp(a - maximum) + torch.exp(b - maximum))
+
 
 # Time embedding
 class SinusoidalPosEmb(nn.Module):
@@ -222,38 +148,32 @@ class SinusoidalPosEmb(nn.Module):
         return emb
 
 # Model
-class ScorePosNet3D(nn.Module):
+class Frags3D(nn.Module):
 
-    def __init__(self, config, protein_atom_feature_dim, ligand_atom_feature_dim,use_four_emb=False,device=None):
+    def __init__(self, config, protein_atom_feature_dim, ligand_atom_feature_dim):
         super().__init__()
         self.config = config
-        self.prompt_emb = nn.Embedding(45,128)
-        nn.init.constant_(self.prompt_emb.weight[0],0)
-        self.use_four_emb = use_four_emb
-        # self.prompt_emb.weight[0].requires_grad = False
-        self.res_indicator = torch.tensor(INDICATOR2).to(device)
-        self.interaction_change = torch.tensor(PROMPT_4)
+        self.prompt_emb = nn.Embedding(6,56)
         # variance schedule
         self.model_mean_type = config.model_mean_type  # ['noise', 'C0']
         self.loss_v_weight = config.loss_v_weight
         self.drop_prob = 0.15
+        # self.v_mode = config.v_mode
+        # assert self.v_mode == 'categorical'
+        # self.v_net_type = getattr(config, 'v_net_type', 'mlp')
+        # self.bond_loss = getattr(config, 'bond_loss', False)
+        # self.bond_net_type = getattr(config, 'bond_net_type', 'pre_att')
+        # self.loss_bond_weight = getattr(config, 'loss_bond_weight', 0.)
+        # self.loss_non_bond_weight = getattr(config, 'loss_non_bond_weight', 0.)
 
         self.sample_time_method = config.sample_time_method  # ['importance', 'symmetric']
- 
-        layer = nn.Linear(128*2, 45, bias=False)
-        torch.nn.init.xavier_uniform_(layer.weight, gain=0.001)
-        emb_dim = 128
+        # self.loss_pos_type = config.loss_pos_type  # ['mse', 'kl']
+        # print(f'Loss pos mode {self.loss_pos_type} applied!')
+        # print(f'Loss bond net type: {self.bond_net_type} '
+        #       f'bond weight: {self.loss_bond_weight} non bond weight: {self.loss_non_bond_weight}')
 
-        self.node_mlp = nn.Sequential(
-            nn.Linear(emb_dim, emb_dim*2),
-            nn.GELU(),
-            nn.Linear(emb_dim*2, emb_dim*2),
-            nn.GELU(),
-            layer)
-
-        self.cls_loss = nn.CrossEntropyLoss()
-        if config.beta_schedule == 'advance':
-            alphas = cosine_beta_schedule_discrete(config.num_diffusion_timesteps,2.5)
+        if config.beta_schedule == 'cosine':
+            alphas = cosine_beta_schedule(config.num_diffusion_timesteps, config.pos_beta_s) ** 2
             # print('cosine pos alpha schedule applied!')
             betas = 1. - alphas
         else:
@@ -264,7 +184,6 @@ class ScorePosNet3D(nn.Module):
                 num_diffusion_timesteps=config.num_diffusion_timesteps,
             )
             alphas = 1. - betas
-
         alphas_cumprod = np.cumprod(alphas, axis=0)
         alphas_cumprod_prev = np.append(1., alphas_cumprod[:-1])
 
@@ -290,7 +209,7 @@ class ScorePosNet3D(nn.Module):
 
         # atom type diffusion schedule in log space
         if config.v_beta_schedule == 'cosine':
-            alphas_v = cosine_beta_schedule_discrete(self.num_timesteps, 1)
+            alphas_v = cosine_beta_schedule(self.num_timesteps, config.v_beta_s)
             # print('cosine v alpha schedule applied!')
         else:
             raise NotImplementedError
@@ -313,7 +232,7 @@ class ScorePosNet3D(nn.Module):
             emb_dim = self.hidden_dim
 
         # atom embedding
-        self.protein_atom_emb = nn.Linear(protein_atom_feature_dim+4, emb_dim)
+        self.protein_atom_emb = nn.Linear(protein_atom_feature_dim, emb_dim)
 
         # center pos
         self.center_pos_mode = config.center_pos_mode  # ['none', 'protein']
@@ -338,15 +257,33 @@ class ScorePosNet3D(nn.Module):
             self.ligand_atom_emb = nn.Linear(ligand_atom_feature_dim, emb_dim)
 
         self.refine_net_type = config.model_type
-        self.refine_net = get_refine_net(config)
+        self.refine_net = PromptFrags(
+            num_blocks=config.num_blocks,
+            num_layers=config.num_layers,
+            hidden_dim=config.hidden_dim,
+            n_heads=config.n_heads,
+            k=config.knn,
+            edge_feat_dim=config.edge_feat_dim,
+            num_r_gaussian=config.num_r_gaussian,
+            num_node_types=config.num_node_types,
+            act_fn=config.act_fn,
+            norm=config.norm,
+            cutoff_mode=config.cutoff_mode,
+            ew_net_type=config.ew_net_type,
+            num_x2h=config.num_x2h,
+            num_h2x=config.num_h2x,
+            r_max=config.r_max,
+            x2h_out_fc=config.x2h_out_fc,
+            sync_twoup=config.sync_twoup
+        )
         self.v_inference = nn.Sequential(
             nn.Linear(self.hidden_dim, self.hidden_dim),
             ShiftedSoftplus(),
             nn.Linear(self.hidden_dim, ligand_atom_feature_dim),
         )
 
-    def forward(self, protein_pos, protein_v, batch_protein,protein_len,init_ligand_pos, init_ligand_v, batch_ligand,ligand_len,
-            interaction, indice=None, time_step=None, return_all=False, fix_x=False,return_attention=False):
+    def forward(self, protein_pos, protein_v, batch_protein,init_ligand_pos, init_ligand_v, batch_ligand,
+            prompt,interaction, frags_mask=None,time_step=None, return_all=False, fix_x=False):
 
         init_ligand_v = F.one_hot(init_ligand_v, self.num_classes).float()
         # time embedding
@@ -358,13 +295,12 @@ class ScorePosNet3D(nn.Module):
                 ], -1)
             elif self.time_emb_mode == 'sin':
                 time_feat = self.time_emb(time_step)
-                input_ligand_feat = torch.cat([init_ligand_v, time_feat[batch_ligand]], -1)
+                input_ligand_feat = torch.cat([init_ligand_v, time_feat], -1)
             else:
                 raise NotImplementedError
         else:
             input_ligand_feat = init_ligand_v
-        protein_indicator = self.res_indicator[indice]
-        protein_v = torch.cat([protein_v,protein_indicator],dim=-1)
+
         h_protein = self.protein_atom_emb(protein_v)
         init_ligand_h = self.ligand_atom_emb(input_ligand_feat)
         #mask_ligand 总节点数目,true表示是ligand节点
@@ -380,21 +316,18 @@ class ScorePosNet3D(nn.Module):
             batch_protein=batch_protein,
             batch_ligand=batch_ligand,
         )
-
-        outputs = self.refine_net(h_all.to(pos_all.dtype), pos_all, mask_ligand, batch_all,protein_len,ligand_len, interaction,return_all=return_all, fix_x=fix_x,return_attention=return_attention)
+        #
+        outputs = self.refine_net(h_all, pos_all, mask_ligand, batch_all, prompt,interaction,frags_mask=frags_mask,return_all=return_all, fix_x=fix_x)
         final_pos, final_h = outputs['x'], outputs['h']
         final_ligand_pos, final_ligand_h = final_pos[mask_ligand], final_h[mask_ligand]
-        protein_h = final_h[~mask_ligand]
+        # final_ligand_pos, final_ligand_h = final_pos[frags_mask], final_h[frags_mask]
         final_ligand_v = self.v_inference(final_ligand_h)
 
         preds = {
             'pred_ligand_pos': final_ligand_pos,
             'pred_ligand_v': final_ligand_v,
             'final_h': final_h,
-            'final_ligand_h': final_ligand_h,
-            'protein_h': protein_h,
-            'res_labels':protein_indicator,
-            'atts':outputs['atts']
+            'final_ligand_h': final_ligand_h
         }
         if return_all:
             final_all_pos, final_all_h = outputs['all_x'], outputs['all_h']
@@ -419,21 +352,21 @@ class ScorePosNet3D(nn.Module):
         )
         return log_probs
 
-    def q_v_pred(self, log_v0, t, batch):
+    def q_v_pred(self, log_v0, t, batch):#log_v0:(N,13)
         # compute q(vt | v0)
-        log_cumprod_alpha_t = extract(self.log_alphas_cumprod_v.to(t.device), t, batch)
+        log_cumprod_alpha_t = extract(self.log_alphas_cumprod_v.to(t.device), t, batch)#(N,1)
         log_1_min_cumprod_alpha = extract(self.log_one_minus_alphas_cumprod_v.to(t.device), t, batch)
 
-        log_probs = log_add_exp(
+        log_probs = log_add_exp(#奇怪的操作 取每个位置最大值保证加上的噪音为正 姑且可认为加上均匀分布噪音
             log_v0 + log_cumprod_alpha_t,
             log_1_min_cumprod_alpha - np.log(self.num_classes)
-        )
+        )#取log后乘法变加法 (N,13)
         return log_probs
 
     def q_v_sample(self, log_v0, t, batch):
         log_qvt_v0 = self.q_v_pred(log_v0, t, batch)
-        sample_index = log_sample_categorical(log_qvt_v0)
-        log_sample = index_to_log_onehot(sample_index, self.num_classes)
+        sample_index = log_sample_categorical(log_qvt_v0)#log_qvt_v0:(N,14) sample_index:N 加上gumbel噪音 robustness?
+        log_sample = index_to_log_onehot(sample_index, self.num_classes)#num_classes 13
         return sample_index, log_sample
 
     # atom type generative process
@@ -522,71 +455,61 @@ class ScorePosNet3D(nn.Module):
         return loss_v
 
     def get_diffusion_loss(
-            self, protein_pos, protein_v, batch_protein, protein_len, ligand_pos, ligand_v, batch_ligand, 
-        ligand_len, interaction=None,time_step=None):
-        res_idx = interaction.to(protein_v.device)
-        if self.use_four_emb:
-            interaction = self.interaction_change[interaction].to(protein_v.device)#check
-        # res_label = interaction.clone().detach()
-        # res_label = interaction
+            self, protein_pos, protein_v, batch_protein, ligand_pos, ligand_v, batch_ligand, prompt=None,
+        interaction=None,frags_mask=None,ligand_mask=None,time_step=None):
         num_graphs = batch_protein.max().item() + 1
-        protein_pos, ligand_pos, _ = center_pos(
-            protein_pos, ligand_pos, batch_protein, batch_ligand, mode=self.center_pos_mode)
+        protein_pos, ligand_pos = center_pos(protein_pos, ligand_pos, batch_protein, batch_ligand, ligand_mask)#TODO:anchor center pos
             # F.one_hot(torch.from_numpy(prompt[0]).long(),num_classes=7)
-
-        raw_interaction = torch.zeros((len(protein_v),128)).to(protein_v.device)
-        filter_idx = interaction[torch.nonzero(interaction).squeeze()].to(protein_v.device)
-        filter_inter = self.prompt_emb(filter_idx)
-        raw_interaction[filter_idx] = filter_inter
-
+        interaction = self.prompt_emb(interaction)
+        # context_mask = ~frags_mask
+        # context_mask = (1 - torch.bernoulli(torch.zeros(num_graphs)+self.drop_prob)).to(protein_pos.device)
+        # pro_prompt,lig_prompt = prompt
+        # lig_prompt = context_mask.index_select(0,batch_ligand).unsqueeze(1) * lig_prompt
+        # pro_prompt = context_mask.index_select(0,batch_protein).unsqueeze(1) * pro_prompt
         # 1. sample noise levels
         if time_step is None:
             time_step, pt = self.sample_time(num_graphs, protein_pos.device, self.sample_time_method)
         else:
             pt = torch.ones_like(time_step).float() / self.num_timesteps
-
         a = self.alphas_cumprod.to(time_step.device).index_select(0, time_step)  # (num_graphs, )
-
+        # v_context, pos_context =frag_context(protein_v,ligand_v,protein_pos,ligand_pos,batch_protein,batch_ligand)
         # 2. perturb pos and v
         a_pos = a[batch_ligand].unsqueeze(-1)  # (num_ligand_atoms, 1)
         pos_noise = torch.zeros_like(ligand_pos)
-        pos_noise.normal_()
-
+        pos_noise = pos_noise.normal_() * ligand_mask[:,None]
         # Xt = a.sqrt() * X0 + (1-a).sqrt() * eps
         ligand_pos_perturbed = a_pos.sqrt() * ligand_pos + (1.0 - a_pos).sqrt() * pos_noise  # pos_noise * std
+        ligand_pos_perturbed = ligand_pos * (~ligand_mask)[:,None] + ligand_pos_perturbed * ligand_mask[:,None]
         # Vt = a * V0 + (1-a) / K
         log_ligand_v0 = index_to_log_onehot(ligand_v, self.num_classes)
-        ligand_v_perturbed, log_ligand_vt = self.q_v_sample(log_ligand_v0, time_step, batch_ligand)
-
+        ligand_v_perturbed, log_ligand_vt = self.q_v_sample(log_ligand_v0, time_step, batch_ligand)#(N)(N,12)
+        ligand_v_perturbed = ligand_v * (~ligand_mask) + ligand_v_perturbed * ligand_mask
         # 3. forward-pass NN, feed perturbed pos and v, output noise
         preds = self(
             protein_pos=protein_pos,
             protein_v=protein_v,
             batch_protein=batch_protein,
-            protein_len = protein_len,
 
             init_ligand_pos=ligand_pos_perturbed,
             init_ligand_v=ligand_v_perturbed,
             batch_ligand=batch_ligand,
-            ligand_len=ligand_len,
-            interaction = raw_interaction,
-            indice = res_idx,
+            prompt = prompt,
+            interaction = interaction,
+            frags_mask = frags_mask,
+            # context = [v_context,pos_context],
             time_step=time_step
         )
 
-        protein_h = preds['protein_h']
-        inter_preds = self.node_mlp(protein_h)
-        # cls_loss = self.cls_loss(inter_preds,torch.argmax(preds['res_labels'],-1))
-        cls_loss = self.cls_loss(inter_preds,res_idx.long())
         pred_ligand_pos, pred_ligand_v = preds['pred_ligand_pos'], preds['pred_ligand_v']
-        pred_pos_noise = pred_ligand_pos - ligand_pos_perturbed
+        pred_pos_noise = pred_ligand_pos * ligand_mask[:,None] - ligand_pos_perturbed * ligand_mask[:,None]
+        # pred_ligand_pos
         # atom position
         if self.model_mean_type == 'noise':
             pos0_from_e = self._predict_x0_from_eps(
                 xt=ligand_pos_perturbed, eps=pred_pos_noise, t=time_step, batch=batch_ligand)
             pos_model_mean = self.q_pos_posterior(
                 x0=pos0_from_e, xt=ligand_pos_perturbed, t=time_step, batch=batch_ligand)
-        elif self.model_mean_type == 'C0':
+        elif self.model_mean_type == 'C0':#this
             pos_model_mean = self.q_pos_posterior(
                 x0=pred_ligand_pos, xt=ligand_pos_perturbed, t=time_step, batch=batch_ligand)
         else:
@@ -600,20 +523,19 @@ class ScorePosNet3D(nn.Module):
         else:
             raise ValueError
         loss_pos = scatter_mean(((pred - target) ** 2).sum(-1), batch_ligand, dim=0)
-        loss_pos = torch.mean(loss_pos)
+        loss_pos = torch.sum(loss_pos)
 
         # atom type loss
-        log_ligand_v_recon = F.log_softmax(pred_ligand_v, dim=-1)
-        log_v_model_prob = self.q_v_posterior(log_ligand_v_recon, log_ligand_vt, time_step, batch_ligand)
-        log_v_true_prob = self.q_v_posterior(log_ligand_v0, log_ligand_vt, time_step, batch_ligand)
-        kl_v = self.compute_v_Lt(log_v_model_prob=log_v_model_prob, log_v0=log_ligand_v0,
-                                 log_v_true_prob=log_v_true_prob, t=time_step, batch=batch_ligand)
-        loss_v = torch.mean(kl_v)
-        loss = 5*loss_pos + loss_v * self.loss_v_weight + cls_loss
+        log_ligand_v_recon = F.log_softmax(pred_ligand_v, dim=-1)#(N,12)
+        log_v_model_prob = self.q_v_posterior(log_ligand_v_recon[ligand_mask], log_ligand_vt[ligand_mask], time_step, batch_ligand[ligand_mask])#(N,12)
+        log_v_true_prob = self.q_v_posterior(log_ligand_v0[ligand_mask], log_ligand_vt[ligand_mask], time_step, batch_ligand[ligand_mask])
+        kl_v = self.compute_v_Lt(log_v_model_prob=log_v_model_prob, log_v0=log_ligand_v0[ligand_mask],
+                                 log_v_true_prob=log_v_true_prob, t=time_step, batch=batch_ligand[ligand_mask])
+        loss_v = torch.sum(kl_v)
+        loss = loss_pos + loss_v * self.loss_v_weight
 
         return {
             'loss_pos': loss_pos,
-            'loss_cls': cls_loss,
             'loss_v': loss_v,
             'loss': loss,
             'x0': ligand_pos,
@@ -693,47 +615,34 @@ class ScorePosNet3D(nn.Module):
 
     @torch.no_grad()
     def sample_diffusion(self, protein_pos, protein_v, batch_protein,
-                         init_ligand_pos, init_ligand_v, batch_ligand,interaction,protein_len,ligand_len,
-                         num_steps=None, pos_only=False,center_pos_mode=None, return_attention=False):
-        res_idx = interaction.to(protein_v.device)
-        if self.use_four_emb:
-            interaction = self.interaction_change[interaction.cpu()].to(protein_v.device)#check
+                         init_ligand_pos, init_ligand_v, batch_ligand,prompt,
+                         num_steps=None, center_pos_mode=None, pos_only=False):
+
         if num_steps is None:
             num_steps = self.num_timesteps
         num_graphs = batch_protein.max().item() + 1
+        pro_prompt,lig_prompt = prompt
         protein_pos, init_ligand_pos, offset = center_pos(
             protein_pos, init_ligand_pos, batch_protein, batch_ligand, mode=center_pos_mode)
-
-        raw_interaction = torch.zeros((len(protein_v),128)).to(protein_v.device)
-        filter_idx = interaction[torch.nonzero(interaction).squeeze()].to(protein_v.device)
-        filter_inter = self.prompt_emb(filter_idx)
-        raw_interaction[filter_idx] = filter_inter
 
         pos_traj, v_traj = [], []
         v0_pred_traj, vt_pred_traj = [], []
         ligand_pos, ligand_v = init_ligand_pos, init_ligand_v
-
         # time sequence
         time_seq = list(reversed(range(self.num_timesteps - num_steps, self.num_timesteps)))
         for i in tqdm(time_seq, desc='sampling', total=len(time_seq)):
             t = torch.full(size=(num_graphs,), fill_value=i, dtype=torch.long, device=protein_pos.device)
-
             preds = self(
                 protein_pos=protein_pos,
-                protein_v=protein_v.float(),
+                protein_v=protein_v,
                 batch_protein=batch_protein,
-                protein_len = protein_len,
-
+                pro_prompt = pro_prompt,
                 init_ligand_pos=ligand_pos,
                 init_ligand_v=ligand_v,
                 batch_ligand=batch_ligand,
-                ligand_len = ligand_len,
-                interaction = raw_interaction,
-                indice = res_idx,
-                time_step=t,
-                return_attention=return_attention
+                lig_prompt = lig_prompt,
+                time_step=t
             )
-
             # Compute posterior mean and variance
             if self.model_mean_type == 'noise':
                 pred_pos_noise = preds['pred_ligand_pos'] - ligand_pos
@@ -774,8 +683,7 @@ class ScorePosNet3D(nn.Module):
             'pos_traj': pos_traj,
             'v_traj': v_traj,
             'v0_traj': v0_pred_traj,
-            'vt_traj': vt_pred_traj,
-            'atts':preds['atts']
+            'vt_traj': vt_pred_traj
         }
 
 def extract(coef, t, batch):
